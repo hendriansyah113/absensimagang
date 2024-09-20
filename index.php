@@ -43,6 +43,7 @@
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -67,112 +68,131 @@
     <link href="src/font/font.css" rel="stylesheet" type="text/css">
     <!-- Custom CSS -->
     <style>
-        .no-js #loader { display: none;  }
-        .js #loader { display: block; position: absolute; left: 100px; top: 0; }
-        .se-pre-con {
-            position: fixed;
-            left: 0px;
-            top: 0px;
-            width: 100%;
-            height: 100%;
-            z-index: 9999;
-            background: url('loading.gif') center no-repeat #fff;
-        }
+    .no-js #loader {
+        display: none;
+    }
+
+    .js #loader {
+        display: block;
+        position: absolute;
+        left: 100px;
+        top: 0;
+    }
+
+    .se-pre-con {
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        background: url('loading.gif') center no-repeat #fff;
+    }
     </style>
 </head>
 
 <body>
-<nav class="navbar navbar-custom navbar-fixed-top bg-info" role="navigation">
-    <div class="container-fluid"><!-- container-fluid -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse"><span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span></button>
-            <!-- Tambahkan logo di sini -->
-            <nav class="navbar navbar-custom navbar-fixed-top" style="background-color: navy;" role="navigation">
-    <div class="container-fluid"><!-- container-fluid -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse"><span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span></button>
-            <a class="navbar-brand" href="#" style="color: white;">
-                <img src="logo2.png" alt="Logo" style="height: 30px; width: auto; display: inline-block; vertical-align: middle;">
-                ABSENSI PKL Badan Pusat Statistik
-            </a>
-        </div>
-    </div><!-- /.container-fluid -->
-</nav>
-    </div><!-- /.container-fluid -->
-</nav>
-<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
-    <!-- Menampilkan info nama dan level admin di navbar -->
-    <?php if ($_SESSION['level']=='Admin' or $_SESSION['level']=='admin'):?>
+    <nav class="navbar navbar-custom navbar-fixed-top bg-info" role="navigation">
+        <div class="container-fluid">
+            <!-- container-fluid -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#sidebar-collapse"><span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span></button>
+                <!-- Tambahkan logo di sini -->
+                <nav class="navbar navbar-custom navbar-fixed-top" style="background-color: navy;" role="navigation">
+                    <div class="container-fluid">
+                        <!-- container-fluid -->
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                                data-target="#sidebar-collapse"><span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span></button>
+                            <a class="navbar-brand" href="#" style="color: white;">
+                                <img src="logo2.png" alt="Logo"
+                                    style="height: 30px; width: auto; display: inline-block; vertical-align: middle;">
+                                ABSENSI PKL Badan Pusat Statistik
+                            </a>
+                        </div>
+                    </div><!-- /.container-fluid -->
+                </nav>
+            </div><!-- /.container-fluid -->
+    </nav>
+    <div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+        <!-- Menampilkan info nama dan level admin di navbar -->
+        <?php if ($_SESSION['level']=='Admin' or $_SESSION['level']=='admin'):?>
         <div class="profile-sidebar">
             <div class="profile-userpic">
                 <img src="source/img/profile.png" class="img-responsive" alt="">
             </div>
             <div class="profile-usertitle">
-            <?php echo substr($_SESSION['nama_admin'],0,20); ?>
+                <?php echo substr($_SESSION['nama_admin'],0,20); ?>
                 <div class="profile-usertitle-name"><?php echo "Administrator"; ?></div>
                 <div></div>
             </div>
             <div class="clear"></div>
         </div>
-    <?php endif; ?>
-    <!-- Menampilkan info nama dan level admin di navbar -->
+        <?php endif; ?>
+        <!-- Menampilkan info nama dan level admin di navbar -->
 
-    <!-- Menampilkan info nama dan level mahasiswa di navbar -->
-    <?php if ($_SESSION['level']=='Mahasiswa' or $_SESSION['level']=='mahasiswa'):?>
+        <!-- Menampilkan info nama dan level mahasiswa di navbar -->
+        <?php if ($_SESSION['level']=='Mahasiswa' or $_SESSION['level']=='mahasiswa'):?>
         <div class="profile-sidebar">
             <div class="profile-userpic">
                 <img src="apps/mahasiswa/foto/<?php echo $_SESSION['foto'];?>" class="img-responsive" alt="">
             </div>
             <div class="profile-usertitle">
-            <?php echo substr($_SESSION['nama_mahasiswa'],0,20); ?>
+                <?php echo substr($_SESSION['nama_mahasiswa'],0,20); ?>
                 <div class="profile-usertitle-name"><?php echo "Mahasiswa"; ?></div>
                 <div></div>
             </div>
             <div class="clear"></div>
         </div>
-    <?php endif;  ?>
-    <!-- Menampilkan info nama dan level mahasiswa di navbar -->
+        <?php endif;  ?>
+        <!-- Menampilkan info nama dan level mahasiswa di navbar -->
 
-<!-- Side Bar Navigation -->
-<div class="divider"></div>
-    <!-- Menu Beranda -->
-    <ul class="nav menu">
-		<li><a href='index.php?page=beranda'><em class='fa fa-home'>&nbsp;</em>  Beranda</a></li>
-    <!-- Menu Beranda -->
-    <!-- Menu Admin -->
-        <?php if ($_SESSION["level"]=="Admin" or $_SESSION['level']=='admin'): ?>
+        <!-- Side Bar Navigation -->
+        <div class="divider"></div>
+        <!-- Menu Beranda -->
+        <ul class="nav menu">
+            <li><a href='index.php?page=beranda'><em class='fa fa-home'>&nbsp;</em> Beranda</a></li>
+            <!-- Menu Beranda -->
+            <!-- Menu Admin -->
+            <?php if ($_SESSION["level"]=="Admin" or $_SESSION['level']=='admin'): ?>
             <li>
-            <a href="index.php?page=mahasiswa" id="mahasiswa" style="font-size: 14px;"><em class="fa fa-users">&nbsp;</em> Data Mahasiswa/Siswa</a></li>
-            <li><a href="index.php?page=data_absensi" id="data_absensi"><em class="fa fa-calendar">&nbsp;</em> Data Absensi</a></li>
-            <li><a href="index.php?page=data_kegiatan" id="kegiatan"><em class="fa fa-book">&nbsp;</em> Data Kegiatan</a></li>
+                <a href="index.php?page=mahasiswa" id="mahasiswa" style="font-size: 14px;"><em
+                        class="fa fa-users">&nbsp;</em> Data Mahasiswa/Siswa</a>
+            </li>
+            <li><a href="index.php?page=data_absensi" id="data_absensi"><em class="fa fa-calendar">&nbsp;</em> Data
+                    Absensi</a></li>
+            <li><a href="index.php?page=data_kegiatan" id="kegiatan"><em class="fa fa-book">&nbsp;</em> Data
+                    Kegiatan</a></li>
             <li><a href="index.php?page=admin" id="admin"><em class="fa fa-user">&nbsp;</em> Administrator</a></li>
-            <li><a href="index.php?page=pengaturan" id="pengaturan"><em class="fa fa-gear">&nbsp;</em> Pengaturan</a></li>
+            <li><a href="index.php?page=pengaturan" id="pengaturan"><em class="fa fa-gear">&nbsp;</em> Pengaturan</a>
+            </li>
             <?php endif; ?>
-    <!-- Menu Admin -->
-    <!-- Menu Mahasiswa -->
+            <!-- Menu Admin -->
+            <!-- Menu Mahasiswa -->
             <?php  if ($_SESSION["level"]=="Mahasiswa" or $_SESSION["level"]=="mahasiswa"): ?>
-                <li><a href="index.php?page=absen"><em class="fa fa-calendar-check-o">&nbsp;</em> Absensi</a></li>
-                <li><a href="index.php?page=riwayat"><em class="fa fa-history">&nbsp;</em> Riwayat Absensi</a></li>
-                <li><a href="index.php?page=kegiatan"><em class="fa fa-book">&nbsp;</em> Kegiatan Harian</a></li>
-                <li><a href="index.php?page=profil"><em class="fa fa-user-circle-o">&nbsp;</em> Profil</a></li>    
+            <li><a href="index.php?page=absen"><em class="fa fa-calendar-check-o">&nbsp;</em> Absensi</a></li>
+            <li><a href="index.php?page=riwayat"><em class="fa fa-history">&nbsp;</em> Riwayat Absensi</a></li>
+            <li><a href="index.php?page=kegiatan"><em class="fa fa-book">&nbsp;</em> Kegiatan Harian</a></li>
+            <li><a href="index.php?page=profil"><em class="fa fa-user-circle-o">&nbsp;</em> Profil</a></li>
             <?php endif; ?>
-    <!-- Menu Mahasiswa -->
-    <!-- Menu Keluar -->    
-        <li><a href="logout.php" id="keluar"><em class="fa fa-sign-out">&nbsp;</em> Keluar</a></li>
-    </ul>
-    <!-- Menu Keluar -->
-</div>
-<!-- Side Bar Navigation -->
+            <!-- Menu Mahasiswa -->
+            <!-- Menu Keluar -->
+            <li><a href="logout.php" id="keluar"><em class="fa fa-sign-out">&nbsp;</em> Keluar</a></li>
+        </ul>
+        <!-- Menu Keluar -->
+    </div>
+    <!-- Side Bar Navigation -->
 
-<!-- Page Penghubung -->
-<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
-    <?php 
+    <!-- Page Penghubung -->
+    <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+        <?php 
         if(isset($_GET['page'])){
             $page = $_GET['page'];
             switch ($page) {
@@ -212,35 +232,36 @@
             }
         }
     ?>
-<!-- Function Page Penghubung -->
+        <!-- Function Page Penghubung -->
 
-    <!--/.row-->
-</div>
-<!--/.main-->
+        <!--/.row-->
+    </div>
+    <!--/.main-->
 
-<!-- Java Script -->
-<script src="template/js/bootstrap.min.js"></script>
-<script src="template/js/chart.min.js"></script>
-<script src="template/js/chart-data.js"></script>
-<script src="template/js/easypiechart.js"></script>
-<script src="template/js/easypiechart-data.js"></script>
-<script src="template/js/bootstrap-datepicker.js"></script>
-<script src="template/js/custom.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
-<script src="/assets/chart/chart.js"></script>
-<!-- Java Script -->
+    <!-- Java Script -->
+    <script src="template/js/bootstrap.min.js"></script>
+    <script src="template/js/chart.min.js"></script>
+    <script src="template/js/chart-data.js"></script>
+    <script src="template/js/easypiechart.js"></script>
+    <script src="template/js/easypiechart-data.js"></script>
+    <script src="template/js/bootstrap-datepicker.js"></script>
+    <script src="template/js/custom.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
+    <script src="/assets/chart/chart.js"></script>
+    <!-- Java Script -->
 
-<script>
-   // konfirmasi sebelum keluar aplikasi
-   $('#keluar').on('click',function(){
-        konfirmasi=confirm("Apakah Anda Yakin Ingin Keluar?")
-        if (konfirmasi){
+    <script>
+    // konfirmasi sebelum keluar aplikasi
+    $('#keluar').on('click', function() {
+        konfirmasi = confirm("Apakah Anda Yakin Ingin Keluar?")
+        if (konfirmasi) {
             return true;
-        }else {
+        } else {
             return false;
         }
     });
-</script>
+    </script>
 </body>
+
 </html>

@@ -228,30 +228,12 @@ $akhir_absen = $setting['akhir_absen'];
     <!-- Include Leaflet CSS and JS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
 
     <script>
     $(document).ready(function() {
         let map;
         let videoStream;
-
-        // Fungsi untuk menghitung jarak antara dua koordinat (Haversine formula)
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Radius bumi dalam kilometer
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            const distance = R * c; // Jarak dalam kilometer
-            return distance * 1000; // Konversi ke meter
-        }
-
-        // Fungsi untuk konversi derajat ke radian
-        function toRadians(degrees) {
-            return degrees * (Math.PI / 180);
-        }
 
         $('#openModalButton').on('click', function() {
             $('#modal').modal('show');
@@ -277,47 +259,27 @@ $akhir_absen = $setting['akhir_absen'];
             // Menampilkan Map dan Lokasi
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    var userLat = position.coords.latitude;
-                    var userLng = position.coords.longitude;
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
 
-                    // Titik referensi (lokasi yang diizinkan) menggunakan koordinat yang Anda berikan
-                    var allowedLat = -2.204598045273787;
-                    var allowedLng = 113.91863623695271;
-
-                    // Radius yang diizinkan (misalnya 500 meter)
-                    var allowedRadius = 200;
-
-                    // Menghitung jarak antara lokasi pengguna dan titik referensi
-                    var distance = calculateDistance(userLat, userLng, allowedLat, allowedLng);
-
-                    // Inisialisasi peta
+                    // Pastikan map hanya diinisialisasi sekali
                     if (!map) {
-                        map = L.map('map').setView([userLat, userLng], 13);
+                        map = L.map('map').setView([lat, lng], 13);
 
                         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                             attribution: '© OpenStreetMap contributors'
                         }).addTo(map);
 
-                        // Marker untuk lokasi user
-                        L.marker([userLat, userLng]).addTo(map)
-                            .openPopup();
-
-                        // Tambahkan radius di sekitar titik referensi
-                        L.circle([allowedLat, allowedLng], {
-                            color: 'blue',
-                            fillColor: '#3f51b5',
-                            fillOpacity: 0.5,
-                            radius: allowedRadius
-                        }).addTo(map);
+                        var marker = L.marker([lat, lng]).addTo(map)
+                            .bindPopup('Lokasi Anda: (' + lat + ', ' + lng + ')').openPopup();
                     } else {
-                        map.setView([userLat, userLng], 13);
+                        map.setView([lat, lng], 13); // Refresh posisi peta jika sudah ada map
                     }
 
                     // Pastikan map ditampilkan dengan benar
                     setTimeout(function() {
                         map.invalidateSize();
                     }, 200);
-
                 }, function(error) {
                     alert("Gagal mendapatkan lokasi: " + error.message);
                 });
@@ -332,8 +294,6 @@ $akhir_absen = $setting['akhir_absen'];
                 let tracks = videoStream.getTracks();
                 tracks.forEach(track => track.stop());
             }
-            // Refresh halaman
-            location.reload(); // Me-refresh halaman setelah modal ditutup
         });
 
         $('#absensiForm').on('submit', function(event) {
@@ -350,37 +310,8 @@ $akhir_absen = $setting['akhir_absen'];
             let photoDataUrl = canvas.toDataURL('image/png');
             document.getElementById('foto').value = photoDataUrl;
 
-            // Ambil nilai status absen
-            var status = $('#status').val();
-            var userLatitude = parseFloat($('#latitude').val());
-            var userLongitude = parseFloat($('#longitude').val());
-
-            // Koordinat pusat untuk validasi radius (misal lokasi kantor)
-            var allowedLatitude = -2.204598045273787;
-            var allowedLongitude = 113.91863623695271;
-            var allowedRadius = 500; // Radius dalam meter
-
-            // Cek jika statusnya "Hadir" (1)
-            if (status === "1") {
-                // Hitung jarak antara lokasi user dan lokasi yang diizinkan
-                var distance = calculateDistance(userLatitude, userLongitude, allowedLatitude,
-                    allowedLongitude);
-
-                if (distance > allowedRadius) {
-                    // Tampilkan SweetAlert jika user di luar radius
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lokasi Tidak Valid',
-                        text: 'Anda berada di luar radius yang diizinkan untuk absen!',
-                    });
-                } else {
-                    // Submit form jika dalam radius yang diperbolehkan
-                    this.submit(); // Submit form secara manual
-                }
-            } else {
-                // Jika statusnya bukan "Hadir" (Izin atau Tidak Hadir), langsung submit form tanpa validasi
-                this.submit(); // Submit form
-            }
+            // Kirim form setelah foto diambil
+            this.submit();
         });
     });
     </script>
