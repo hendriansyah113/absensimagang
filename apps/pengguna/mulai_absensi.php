@@ -113,6 +113,7 @@ $absensi_sudah = $data['COUNT(*)'] > 0 ? "disabled" : "";
             <div class="form-group">
                 <label>Status :</label>
                 <select class="form-control" id="status" name="status" required>
+                    <option value="">Pilih Status</option>
                     <option value="1">Hadir</option>
                     <option value="2">Izin</option>
                     <option value="3">Tidak Hadir</option>
@@ -218,7 +219,7 @@ $absensi_sudah = $data['COUNT(*)'] > 0 ? "disabled" : "";
             // Koordinat lokasi yang diizinkan (misalnya kantor)
             var allowedLatitude = -2.204598045273787;
             var allowedLongitude = 113.91863623695271;
-            var allowedRadius = 500; // Radius dalam meter
+            var allowedRadius = 3000; // Radius dalam meter
 
             // Hitung jarak antara lokasi user dan lokasi yang diizinkan
             var distance = calculateDistance(userLatitude, userLongitude, allowedLatitude, allowedLongitude);
