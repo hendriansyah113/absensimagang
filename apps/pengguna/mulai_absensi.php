@@ -15,11 +15,18 @@ if (isset($_POST['submit'])) {
     $status = $_POST["status"];
     $alasan = isset($_POST["alasan"]) ? input($_POST["alasan"]) : null;
 
+    // Inisialisasi variabel untuk file upload surat
+    $uploadOk = 1;
+    $target_file = basename($_FILES["surat"]["name"]);
+    $target_dir = '../../uploads/surat/' . $target_file;
+
+    $fileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
     date_default_timezone_set("Asia/Jakarta");
     $tanggal = date("Y-m-d");
     $waktu = date("H:i:s");
 
-    // Proses menyimpan foto
+    // Proses menyimpan foto absensi
     $foto = $_POST['foto'];
     error_log("Foto: " . $foto); // Log untuk memeriksa foto
 
@@ -32,7 +39,7 @@ if (isset($_POST['submit'])) {
         // Periksa apakah dekode berhasil
         if ($data === false) {
             echo "Gagal mendekode gambar.";
-            exit; // Keluar jika dekode gagal
+            exit;
         }
 
         $file_name = 'foto_' . uniqid() . '.png';
@@ -41,11 +48,48 @@ if (isset($_POST['submit'])) {
         // Simpan foto ke server
         if (file_put_contents($file_path, $data) === false) {
             echo "Gagal menyimpan gambar.";
-            exit; // Keluar jika gagal menyimpan
+            exit;
         }
     } else {
         echo "Format gambar tidak valid.";
-        exit; // Keluar jika format tidak valid
+        exit;
+    }
+
+    // Jika status izin atau sakit, cek dan simpan file surat
+    if ($status == "Izin" || $status == "Sakit") {
+        if (isset($_FILES["surat"]) && $_FILES["surat"]["error"] == 0) {
+            // Validasi file (hanya PDF yang diizinkan, maksimal 2MB)
+            if ($fileType != "pdf" && $fileType != "jpg" && $fileType != "png" && $fileType != "jpeg") {
+                echo "Maaf, hanya file PDF, JPG, atau PNG yang diizinkan.";
+                $uploadOk = 0;
+            }
+
+            if ($_FILES["surat"]["size"] > 2000000) {
+                echo "Maaf, file terlalu besar. Maksimal 2MB.";
+                $uploadOk = 0;
+            }
+
+            if ($uploadOk == 1) {
+                if (move_uploaded_file($_FILES["surat"]["tmp_name"], $target_dir)) {
+                    echo "Surat berhasil diupload.";
+                } else {
+                    echo "Maaf, terjadi kesalahan saat mengupload surat.";
+                    $uploadOk = 0;
+                }
+            }
+        } else {
+            echo "<script>alert('Surat Izin Atau Sakit Diperlukan');</script>";
+            $uploadOk = 5;
+        }
+    }
+
+    if ($uploadOk == 1) {
+        if (move_uploaded_file($_FILES["surat"]["tmp_name"], $target_dir)) {
+            echo "Surat berhasil diupload.";
+        } else {
+            echo "Maaf, terjadi kesalahan saat mengupload surat.";
+            $uploadOk = 0;
+        }
     }
 
     // Cek waktu absen
@@ -62,10 +106,18 @@ if (isset($_POST['submit'])) {
                 ('$id_mahasiswa', '$status', '$waktu', '$tanggal', '$file_name', '$latitude', '$longitude')";
         $simpan_absensi = mysqli_query($kon, $sql);
 
-        // Jika status izin, simpan alasan
-        if ($status == "2" && $alasan) {
-            $sql = "INSERT INTO tbl_alasan (id_mahasiswa, alasan, tanggal) VALUES 
-                    ('$id_mahasiswa', '$alasan', '$tanggal')";
+        // Jika status izin atau sakit, simpan alasan dan file surat
+        if (($status == "Hadir" || $status == "Sakit") && $alasan) {
+            if ($uploadOk == 1) {
+                if (move_uploaded_file($_FILES["surat"]["tmp_name"], $target_dir)) {
+                    echo "Surat berhasil diupload.";
+                } else {
+                    echo "Maaf, terjadi kesalahan saat mengupload surat.";
+                    $uploadOk = 0;
+                }
+            }
+            $sql = "INSERT INTO tbl_alasan (id_mahasiswa, alasan, file_surat, tanggal) VALUES 
+                    ('$id_mahasiswa', '$alasan', '$target_file', '$tanggal')";
             $simpan_izin = mysqli_query($kon, $sql);
         }
 
@@ -77,8 +129,8 @@ if (isset($_POST['submit'])) {
             echo "<script>alert('Gagal menyimpan data.');</script>";
         }
     } else {
-        echo "<script> alert('Waktu absen tidak valid.');
-    window.location.href = 'http://localhost/absensimagang/index.php?page=absen';</script>";
+        echo "<script>alert('Waktu absen tidak valid.');
+        window.location.href = 'http://localhost/absensimagang/index.php?page=absen';</script>";
     }
 }
 ?>
@@ -114,13 +166,11 @@ $absensi_sudah = $data['COUNT(*)'] > 0 ? "disabled" : "";
                 <label>Status :</label>
                 <select class="form-control" id="status" name="status" required>
                     <option value="">Pilih Status</option>
-                    <option value="1">Hadir</option>
-                    <option value="2">Izin</option>
-                    <option value="3">Tidak Hadir</option>
+                    <option value="Hadir">Hadir</option>
+                    <option value="Izin">Izin</option>
+                    <option value="Sakit">Sakit</option>
                 </select>
-
             </div>
-
         </div>
 
         <div class="col-sm-6" id="text_alasan" style="display:none;">
@@ -128,6 +178,14 @@ $absensi_sudah = $data['COUNT(*)'] > 0 ? "disabled" : "";
                 <label>Alasan :</label>
                 <input type="text" name="alasan" id="alasan" class="form-control"
                     placeholder="Masukkan Alasan Kenapa Izin?">
+            </div>
+        </div>
+
+        <!-- Upload file untuk Izin/Sakit -->
+        <div class="col-sm-6" id="upload_surat" style="display:none;">
+            <div class="form-group">
+                <label for="surat">Upload Surat Izin/Sakit:</label>
+                <input type="file" name="surat" id="surat" class="form-control">
             </div>
         </div>
     </div>
@@ -190,18 +248,25 @@ $absensi_sudah = $data['COUNT(*)'] > 0 ? "disabled" : "";
                 $("#submit").prop('disabled', true);
                 $("#text_alasan").hide();
                 $("#alasan").attr("required", false);
-            } else if (status == "2") { // Jika memilih Izin (status 2)
-                // Tampilkan input alasan dan wajib diisi
+                $("#surat").attr("required", false); // Wajib upload surat
+                $("#surat").hide();
+            } else if (status == "Izin" || status == "Sakit") { // Jika memilih Izin atau Sakit
+                // Tampilkan input alasan dan upload surat, sembunyikan kamera
                 $("#text_alasan").show();
-                $("#alasan").attr("required", true);
-                // Aktifkan tombol absen tanpa cek radius
+                $("#upload_surat").show();
                 $("#submit").prop('disabled', false);
+                $("#surat").show(); // Wajib upload surat
+                $("#alasan").attr("required", true); // Wajib input alasan
+                $("#surat").attr("required", true); // Wajib upload surat
             } else {
                 // Sembunyikan input alasan dan tidak wajib diisi
+                $("#surat").hide();
                 $("#text_alasan").hide();
+                $("#upload_surat").hide();
                 $("#alasan").attr("required", false);
+                $("#surat").attr("required", false); // Wajib upload surat
 
-                if (status == "1") { // Jika statusnya Hadir (status 1)
+                if (status == "Hadir") { // Jika statusnya Hadir (status 1)
                     // Lakukan pengecekan lokasi/radius
                     checkRadius();
                 } else {

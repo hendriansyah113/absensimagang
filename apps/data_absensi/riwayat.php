@@ -92,10 +92,10 @@
                                 tbl_absensi.latitude,
                                 IFNULL(tbl_alasan.alasan, ' - ') AS alasan,
                                   (CASE
-                                    WHEN tbl_absensi.status = 1 THEN 'Hadir'
-                                    WHEN tbl_absensi.status = 2 THEN 'Izin'
-                                    WHEN tbl_absensi.status = 3 THEN 'Sakit'
-                                    WHEN tbl_absensi.status = 4 THEN 'Tidak Hadir'
+                                    WHEN tbl_absensi.status = 'Hadir' THEN 'Hadir'
+                                    WHEN tbl_absensi.status = 'Izin' THEN 'Izin'
+                                    WHEN tbl_absensi.status = 'Sakit' THEN 'Sakit'
+                                    WHEN tbl_absensi.status = 'Tidak hadir' THEN 'Tidak Hadir'
                                     ELSE 'Belum Absensi'
                                 END) AS status
                                 FROM tbl_absensi
@@ -114,10 +114,10 @@
                                 tbl_absensi.latitude,
                                 IFNULL(tbl_alasan.alasan, ' - ') AS alasan,
                                   (CASE
-                                    WHEN tbl_absensi.status = 1 THEN 'Hadir'
-                                    WHEN tbl_absensi.status = 2 THEN 'Izin'
-                                    WHEN tbl_absensi.status = 3 THEN 'Sakit'
-                                    WHEN tbl_absensi.status = 4 THEN 'Tidak Hadir'
+                                    WHEN tbl_absensi.status = 'Hadir' THEN 'Hadir'
+                                    WHEN tbl_absensi.status = 'Izin' THEN 'Izin'
+                                    WHEN tbl_absensi.status = 'Sakit' THEN 'Sakit'
+                                    WHEN tbl_absensi.status = 'Tidak hadir' THEN 'Tidak Hadir'
                                     ELSE 'Belum Absensi'
                                 END) AS status
                                 FROM tbl_absensi

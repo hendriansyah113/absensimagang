@@ -121,6 +121,7 @@ $akhir_absen = $setting['akhir_absen'];
                                     include 'config/database.php';
                                     $tanggal_sekarang = date("Y-m-d");
                                     $hari_sekarang = date("l", strtotime($tanggal_sekarang));
+                                    $is_absen = false; // Mahasiswa sudah absen
                                     if ($hari_sekarang == "Saturday" || $hari_sekarang == "Sunday") {
                                         echo "Hari Libur";
                                     } else {
@@ -128,12 +129,13 @@ $akhir_absen = $setting['akhir_absen'];
                                         $result = mysqli_query($kon, $kueri);
                                         if (mysqli_num_rows($result) > 0) {
                                             $data = mysqli_fetch_array($result);
-                                            if ($data['status'] == 1) {
+                                            $is_absen = true; // Mahasiswa sudah absen
+                                            if ($data['status'] == "Hadir") {
                                                 echo "Hadir";
-                                            } elseif ($data['status'] == 2) {
+                                            } elseif ($data['status'] == "Izin") {
                                                 echo "Izin";
-                                            } elseif ($data['status'] == 3) {
-                                                echo "Tidak hadir";
+                                            } elseif ($data['status'] == "Sakit") {
+                                                echo "Sakit";
                                             }
                                         } else {
                                             echo "Belum Absensi";
@@ -145,8 +147,10 @@ $akhir_absen = $setting['akhir_absen'];
                             <tr>
                                 <td>
                                     <button id_mahasiswa="<?php echo $id_mahasiswa; ?>" id="tombol_absensi"
-                                        class="tombol_periode mulai_absensi btn btn-success btn-circle"><i
-                                            class="fa fa-clock-o"></i> Absensi</button>
+                                        class="tombol_periode mulai_absensi btn btn-success btn-circle"
+                                        <?php if ($is_absen) { echo 'disabled'; } ?>>
+                                        <i class="fa fa-clock-o"></i> Absensi
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -192,37 +196,37 @@ $akhir_absen = $setting['akhir_absen'];
     <!-- Model AJAX -->
 
     <script>
-        // Setting pengguna
-        $('.mulai_absensi').on('click', function() {
-            var id_mahasiswa = $(this).attr("id_mahasiswa");
-            $.ajax({
-                url: 'apps/pengguna/mulai_absensi.php',
-                method: 'post',
-                data: {
-                    id_mahasiswa: id_mahasiswa
-                },
-                success: function(data) {
-                    $('#tampil_data').html(data);
-                    document.getElementById("judul").innerHTML = 'Mulai Absensi';
-                }
-            });
-            // Membuka modal
-            $('#modal').modal('show');
+    // Setting pengguna
+    $('.mulai_absensi').on('click', function() {
+        var id_mahasiswa = $(this).attr("id_mahasiswa");
+        $.ajax({
+            url: 'apps/pengguna/mulai_absensi.php',
+            method: 'post',
+            data: {
+                id_mahasiswa: id_mahasiswa
+            },
+            success: function(data) {
+                $('#tampil_data').html(data);
+                document.getElementById("judul").innerHTML = 'Mulai Absensi';
+            }
         });
+        // Membuka modal
+        $('#modal').modal('show');
+    });
     </script>
 
     <script>
-        $(document).ready(function() {
-            var tanggal_sekarang = new Date();
-            var tanggal_keluar = new Date("<?php echo $tanggal_keluar; ?>");
-            if (tanggal_sekarang > tanggal_keluar) {
-                // Sembunyikan button absensi
-                $(".tombol_periode").hide();
-                $("#div_periode").show();
-            } else {
-                $("#div_periode").hide();
-            }
-        });
+    $(document).ready(function() {
+        var tanggal_sekarang = new Date();
+        var tanggal_keluar = new Date("<?php echo $tanggal_keluar; ?>");
+        if (tanggal_sekarang > tanggal_keluar) {
+            // Sembunyikan button absensi
+            $(".tombol_periode").hide();
+            $("#div_periode").show();
+        } else {
+            $("#div_periode").hide();
+        }
+    });
     </script>
 
     <!-- Include Leaflet CSS and JS -->
@@ -231,156 +235,156 @@ $akhir_absen = $setting['akhir_absen'];
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        $(document).ready(function() {
-            let map;
-            let videoStream;
+    $(document).ready(function() {
+        let map;
+        let videoStream;
 
-            // Fungsi untuk menghitung jarak antara dua koordinat (Haversine formula)
-            function calculateDistance(lat1, lon1, lat2, lon2) {
-                const R = 6371; // Radius bumi dalam kilometer
-                const dLat = (lat2 - lat1) * Math.PI / 180;
-                const dLon = (lon2 - lon1) * Math.PI / 180;
-                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                const distance = R * c; // Jarak dalam kilometer
-                return distance * 1000; // Konversi ke meter
-            }
+        // Fungsi untuk menghitung jarak antara dua koordinat (Haversine formula)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius bumi dalam kilometer
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c; // Jarak dalam kilometer
+            return distance * 1000; // Konversi ke meter
+        }
 
-            // Fungsi untuk konversi derajat ke radian
-            function toRadians(degrees) {
-                return degrees * (Math.PI / 180);
-            }
+        // Fungsi untuk konversi derajat ke radian
+        function toRadians(degrees) {
+            return degrees * (Math.PI / 180);
+        }
 
-            $('#openModalButton').on('click', function() {
-                $('#modal').modal('show');
-            });
-
-            $('#modal').on('shown.bs.modal', function() {
-                // Mengaktifkan kamera
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    navigator.mediaDevices.getUserMedia({
-                        video: true
-                    }).then(function(stream) {
-                        var video = document.getElementById('video');
-                        video.srcObject = stream;
-                        video.play();
-                        videoStream = stream;
-                    }).catch(function(error) {
-                        alert('Kamera tidak tersedia: ' + error.message);
-                    });
-                } else {
-                    alert('Browser tidak mendukung akses kamera.');
-                }
-
-                // Menampilkan Map dan Lokasi
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                        var userLat = position.coords.latitude;
-                        var userLng = position.coords.longitude;
-
-                        // Titik referensi (lokasi yang diizinkan) menggunakan koordinat yang Anda berikan
-                        var allowedLat = -2.204598045273787;
-                        var allowedLng = 113.91863623695271;
-
-                        // Radius yang diizinkan (misalnya 500 meter)
-                        var allowedRadius = 3000;
-
-                        // Menghitung jarak antara lokasi pengguna dan titik referensi
-                        var distance = calculateDistance(userLat, userLng, allowedLat, allowedLng);
-
-                        // Inisialisasi peta
-                        if (!map) {
-                            map = L.map('map').setView([userLat, userLng], 13);
-
-                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                attribution: '© OpenStreetMap contributors'
-                            }).addTo(map);
-
-                            // Marker untuk lokasi user
-                            L.marker([userLat, userLng]).addTo(map)
-                                .openPopup();
-
-                            // Tambahkan radius di sekitar titik referensi
-                            L.circle([allowedLat, allowedLng], {
-                                color: 'blue',
-                                fillColor: '#3f51b5',
-                                fillOpacity: 0.5,
-                                radius: allowedRadius
-                            }).addTo(map);
-                        } else {
-                            map.setView([userLat, userLng], 13);
-                        }
-
-                        // Pastikan map ditampilkan dengan benar
-                        setTimeout(function() {
-                            map.invalidateSize();
-                        }, 200);
-
-                    }, function(error) {
-                        alert("Gagal mendapatkan lokasi: " + error.message);
-                    });
-                } else {
-                    alert("Browser tidak mendukung Geolocation.");
-                }
-            });
-
-            $('#modal').on('hidden.bs.modal', function() {
-                // Matikan kamera
-                if (videoStream) {
-                    let tracks = videoStream.getTracks();
-                    tracks.forEach(track => track.stop());
-                }
-                // Refresh halaman
-                location.reload(); // Me-refresh halaman setelah modal ditutup
-            });
-
-            $('#absensiForm').on('submit', function(event) {
-                event.preventDefault(); // Mencegah form dikirim langsung
-
-                // Ambil foto sebelum mengirim form
-                let video = document.getElementById('video');
-                let canvas = document.getElementById('photoCanvas');
-                let context = canvas.getContext('2d');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                let photoDataUrl = canvas.toDataURL('image/png');
-                document.getElementById('foto').value = photoDataUrl;
-
-                // Ambil nilai status absen
-                var status = $('#status').val();
-                var userLatitude = parseFloat($('#latitude').val());
-                var userLongitude = parseFloat($('#longitude').val());
-
-                // Koordinat pusat untuk validasi radius (misal lokasi kantor)
-                var allowedLatitude = -2.204598045273787;
-                var allowedLongitude = 113.91863623695271;
-                var allowedRadius = 500; // Radius dalam meter
-
-                // Cek jika statusnya "Hadir" (1)
-                if (status === "1") {
-                    // Hitung jarak antara lokasi user dan lokasi yang diizinkan
-                    var distance = calculateDistance(userLatitude, userLongitude, allowedLatitude,
-                        allowedLongitude);
-
-                    if (distance > allowedRadius) {
-                        // Tampilkan SweetAlert jika user di luar radius
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lokasi Tidak Valid',
-                            text: 'Anda berada di luar radius yang diizinkan untuk absen!',
-                        });
-                    } else {
-                        // Submit form jika dalam radius yang diperbolehkan
-                        this.submit(); // Submit form secara manual
-                    }
-                } else {
-                    // Jika statusnya bukan "Hadir" (Izin atau Tidak Hadir), langsung submit form tanpa validasi
-                    this.submit(); // Submit form
-                }
-            });
+        $('#openModalButton').on('click', function() {
+            $('#modal').modal('show');
         });
+
+        $('#modal').on('shown.bs.modal', function() {
+            // Mengaktifkan kamera
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({
+                    video: true
+                }).then(function(stream) {
+                    var video = document.getElementById('video');
+                    video.srcObject = stream;
+                    video.play();
+                    videoStream = stream;
+                }).catch(function(error) {
+                    alert('Kamera tidak tersedia: ' + error.message);
+                });
+            } else {
+                alert('Browser tidak mendukung akses kamera.');
+            }
+
+            // Menampilkan Map dan Lokasi
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+
+                    // Titik referensi (lokasi yang diizinkan) menggunakan koordinat yang Anda berikan
+                    var allowedLat = -2.204598045273787;
+                    var allowedLng = 113.91863623695271;
+
+                    // Radius yang diizinkan (misalnya 500 meter)
+                    var allowedRadius = 3000;
+
+                    // Menghitung jarak antara lokasi pengguna dan titik referensi
+                    var distance = calculateDistance(userLat, userLng, allowedLat, allowedLng);
+
+                    // Inisialisasi peta
+                    if (!map) {
+                        map = L.map('map').setView([userLat, userLng], 13);
+
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap contributors'
+                        }).addTo(map);
+
+                        // Marker untuk lokasi user
+                        L.marker([userLat, userLng]).addTo(map)
+                            .openPopup();
+
+                        // Tambahkan radius di sekitar titik referensi
+                        L.circle([allowedLat, allowedLng], {
+                            color: 'blue',
+                            fillColor: '#3f51b5',
+                            fillOpacity: 0.5,
+                            radius: allowedRadius
+                        }).addTo(map);
+                    } else {
+                        map.setView([userLat, userLng], 13);
+                    }
+
+                    // Pastikan map ditampilkan dengan benar
+                    setTimeout(function() {
+                        map.invalidateSize();
+                    }, 200);
+
+                }, function(error) {
+                    alert("Gagal mendapatkan lokasi: " + error.message);
+                });
+            } else {
+                alert("Browser tidak mendukung Geolocation.");
+            }
+        });
+
+        $('#modal').on('hidden.bs.modal', function() {
+            // Matikan kamera
+            if (videoStream) {
+                let tracks = videoStream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+            // Refresh halaman
+            location.reload(); // Me-refresh halaman setelah modal ditutup
+        });
+
+        $('#absensiForm').on('submit', function(event) {
+            event.preventDefault(); // Mencegah form dikirim langsung
+
+            // Ambil foto sebelum mengirim form
+            let video = document.getElementById('video');
+            let canvas = document.getElementById('photoCanvas');
+            let context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            let photoDataUrl = canvas.toDataURL('image/png');
+            document.getElementById('foto').value = photoDataUrl;
+
+            // Ambil nilai status absen
+            var status = $('#status').val();
+            var userLatitude = parseFloat($('#latitude').val());
+            var userLongitude = parseFloat($('#longitude').val());
+
+            // Koordinat pusat untuk validasi radius (misal lokasi kantor)
+            var allowedLatitude = -2.204598045273787;
+            var allowedLongitude = 113.91863623695271;
+            var allowedRadius = 500; // Radius dalam meter
+
+            // Cek jika statusnya "Hadir" (1)
+            if (status === "1") {
+                // Hitung jarak antara lokasi user dan lokasi yang diizinkan
+                var distance = calculateDistance(userLatitude, userLongitude, allowedLatitude,
+                    allowedLongitude);
+
+                if (distance > allowedRadius) {
+                    // Tampilkan SweetAlert jika user di luar radius
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lokasi Tidak Valid',
+                        text: 'Anda berada di luar radius yang diizinkan untuk absen!',
+                    });
+                } else {
+                    // Submit form jika dalam radius yang diperbolehkan
+                    this.submit(); // Submit form secara manual
+                }
+            } else {
+                // Jika statusnya bukan "Hadir" (Izin atau Tidak Hadir), langsung submit form tanpa validasi
+                this.submit(); // Submit form
+            }
+        });
+    });
     </script>

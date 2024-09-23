@@ -1,52 +1,54 @@
 <?php
-function MendapatkanBulan($bulan) {
+function MendapatkanBulan($bulan)
+{
     switch ($bulan) {
         case 1:
-        return "Januari";
-        break;
+            return "Januari";
+            break;
         case 2:
-        return "Februari";
-        break;
+            return "Februari";
+            break;
         case 3:
-        return "Maret";
-        break;
+            return "Maret";
+            break;
         case 4:
-        return "April";
-        break;
+            return "April";
+            break;
         case 5:
-        return "Mei";
-        break;
+            return "Mei";
+            break;
         case 6:
-        return "Juni";
-        break;
+            return "Juni";
+            break;
         case 7:
-        return "Juli";
-        break;
+            return "Juli";
+            break;
         case 8:
-        return "Agustus";
-        break;
+            return "Agustus";
+            break;
         case 9:
-        return "September";
-        break;
+            return "September";
+            break;
         case 10:
-        return "Oktober";
-        break;
+            return "Oktober";
+            break;
         case 11:
-        return "November";
-        break;
+            return "November";
+            break;
         case 12:
-        return "Desember";
-        break;
+            return "Desember";
+            break;
         default:
-        return "Bulan tidak valid";
-        break;
+            return "Bulan tidak valid";
+            break;
     }
 }
 ?>
 
 <?php
-function MendapatkanHari($hari) {
-    switch($hari) {
+function MendapatkanHari($hari)
+{
+    switch ($hari) {
         case "Monday":
             return "Senin";
             break;
@@ -73,14 +75,16 @@ function MendapatkanHari($hari) {
 ?>
 
 <?php
-function AbsensiOtomatis($sql) {
+function AbsensiOtomatis($sql)
+{
     include 'database.php';
-    $sql="SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama, tbl_mahasiswa.universitas, 
+    $sql = "SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama, tbl_mahasiswa.universitas, 
         tbl_mahasiswa.mulai_magang, tbl_mahasiswa.akhir_magang, tbl_absensi.id_absensi, 
         (CASE
             WHEN tbl_absensi.status IS NULL THEN 'Belum Absensi'
             WHEN tbl_absensi.status = 1 THEN 'Hadir'
             WHEN tbl_absensi.status = 2 THEN 'Izin'
+            WHEN tbl_absensi.status = 3 THEN 'Sakit'
         ELSE 'Tidak Hadir' END) AS status, 
         (CASE
             WHEN tbl_absensi.waktu IS NULL THEN 'Belum'
@@ -95,16 +99,18 @@ function AbsensiOtomatis($sql) {
             tbl_mahasiswa.akhir_magang >= CURDATE()
             ORDER BY tbl_mahasiswa.nama ASC;";
     return $sql;
-    }
+}
 ?>
 
 <?php
-    function PencarianAbsensi($nama, $tanggal_awal, $tanggal_akhir){
+function PencarianAbsensi($nama, $tanggal_awal, $tanggal_akhir)
+{
     include 'database.php';
-    $sql="SELECT tbl_absensi.id_absensi, tbl_absensi.id_mahasiswa, 
+    $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.id_mahasiswa, 
     COALESCE(CASE tbl_absensi.status 
         WHEN 1 THEN 'Hadir' 
         WHEN 2 THEN 'Izin' 
+        WHEN 3 THEN 'Izin' 
     ELSE 'Tidak Hadir' END) as status,
     DATE_FORMAT(tbl_absensi.tanggal, '%W') AS hari, 
         tbl_absensi.tanggal, 
@@ -120,11 +126,12 @@ function AbsensiOtomatis($sql) {
         tbl_absensi.tanggal <= '$tanggal_akhir'
     ORDER BY tbl_absensi.tanggal DESC;";
     return $sql;
-    }
+}
 ?>
 
 <?php
-    function EditAbsensi($id_absensi) {
+function EditAbsensi($id_absensi)
+{
     include 'database.php';
     $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.id_mahasiswa, 
     tbl_absensi.status, tbl_absensi.waktu, tbl_absensi.tanggal, 
@@ -133,13 +140,14 @@ function AbsensiOtomatis($sql) {
     WHERE tbl_absensi.tanggal = tbl_alasan.tanggal OR tbl_alasan.tanggal IS NULL 
     AND tbl_absensi.id_absensi = '$id_absensi';";
     return $sql;
-    }
+}
 ?>
 
 <?php
-function DataKegiatan($sql) {
+function DataKegiatan($sql)
+{
     include 'database.php';
-    $sql="SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama, 
+    $sql = "SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama, 
     tbl_mahasiswa.universitas, tbl_kegiatan.id_kegiatan, 
     tbl_kegiatan.kegiatan, tbl_kegiatan.tanggal, 
     DATE_FORMAT(tbl_kegiatan.tanggal, '%W') AS hari, 
@@ -148,13 +156,14 @@ function DataKegiatan($sql) {
     tbl_mahasiswa.id_mahasiswa = tbl_kegiatan.id_mahasiswa 
     ORDER BY tbl_kegiatan.tanggal DESC";
     return $sql;
-    }
+}
 ?>
 
 <?php
-function CariKegiatan($nama, $tanggal_awal, $tanggal_akhir) {
+function CariKegiatan($nama, $tanggal_awal, $tanggal_akhir)
+{
     include 'database.php';
-    $sql="SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama, 
+    $sql = "SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama, 
     tbl_mahasiswa.universitas, tbl_kegiatan.id_kegiatan, 
     tbl_kegiatan.kegiatan, tbl_kegiatan.tanggal, 
     DATE_FORMAT(tbl_kegiatan.tanggal, '%W') AS hari, 
@@ -165,13 +174,14 @@ function CariKegiatan($nama, $tanggal_awal, $tanggal_akhir) {
     tbl_kegiatan.tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir' 
     ORDER BY tbl_kegiatan.tanggal DESC";
     return $sql;
-    }
+}
 ?>
 
 <?php
-function MenampilkanKegiatan($id_mahasiswa) {
+function MenampilkanKegiatan($id_mahasiswa)
+{
     include 'database.php';
-    $sql="SELECT tbl_kegiatan.id_kegiatan, tbl_kegiatan.id_mahasiswa, 
+    $sql = "SELECT tbl_kegiatan.id_kegiatan, tbl_kegiatan.id_mahasiswa, 
     DATE_FORMAT(tbl_kegiatan.tanggal, '%d-%M-%Y') AS tanggal, 
     DAYNAME(tbl_kegiatan.tanggal) AS hari, 
     GROUP_CONCAT(CONCAT(tbl_kegiatan.kegiatan, 
@@ -185,9 +195,10 @@ function MenampilkanKegiatan($id_mahasiswa) {
 ?>
 
 <?php
-function MencarikanKegiatan($id_mahasiswa, $tanggal_awal, $tanggal_akhir) {
+function MencarikanKegiatan($id_mahasiswa, $tanggal_awal, $tanggal_akhir)
+{
     include 'database.php';
-    $sql="SELECT tbl_kegiatan.id_kegiatan, tbl_kegiatan.id_mahasiswa, 
+    $sql = "SELECT tbl_kegiatan.id_kegiatan, tbl_kegiatan.id_mahasiswa, 
     DATE_FORMAT(tbl_kegiatan.tanggal, '%d-%M-%Y') AS tanggal, 
     DAYNAME(tbl_kegiatan.tanggal) AS hari, 
     GROUP_CONCAT(CONCAT(tbl_kegiatan.kegiatan, 
@@ -202,145 +213,159 @@ function MencarikanKegiatan($id_mahasiswa, $tanggal_awal, $tanggal_akhir) {
 ?>
 
 <?php
-function WaktuKegiatan($string_kegiatan) {
+function WaktuKegiatan($string_kegiatan)
+{
     $array_kegiatan = explode(", ", $string_kegiatan);
     $kegiatan = array();
     foreach ($array_kegiatan as $kgt) {
-    $kgt_array = explode(" (", $kgt);
-    $nama_kegiatan = trim($kgt_array[0]);
-    $waktu_kegiatan = trim($kgt_array[1], ")");
-    $waktu_array = explode(" - ", $waktu_kegiatan);
-    $waktu_awal = trim($waktu_array[0]);
-    $waktu_akhir = trim($waktu_array[1]);
-    $waktu_awal = date('H:i', strtotime($waktu_awal));
-    $waktu_akhir = date('H:i', strtotime($waktu_akhir));
-    $kegiatan[] = $waktu_awal . " - " . $waktu_akhir;
+        $kgt_array = explode(" (", $kgt);
+        $nama_kegiatan = trim($kgt_array[0]);
+        $waktu_kegiatan = trim($kgt_array[1], ")");
+        $waktu_array = explode(" - ", $waktu_kegiatan);
+        $waktu_awal = trim($waktu_array[0]);
+        $waktu_akhir = trim($waktu_array[1]);
+        $waktu_awal = date('H:i', strtotime($waktu_awal));
+        $waktu_akhir = date('H:i', strtotime($waktu_akhir));
+        $kegiatan[] = $waktu_awal . " - " . $waktu_akhir;
     }
     foreach ($kegiatan as $kegiatan) {
-        echo $kegiatan. ' </br>';
+        echo $kegiatan . ' </br>';
     }
 }
 ?>
 
 <?php
-function BarisKegiatan($string_kegiatan) {
+function BarisKegiatan($string_kegiatan)
+{
     $array_kegiatan = explode(", ", $string_kegiatan);
     $kegiatan = array();
     foreach ($array_kegiatan as $kgt) {
-    $kgt_array = explode(" (", $kgt);
-    $nama_kegiatan = trim($kgt_array[0]);
-    $kegiatan[] = $nama_kegiatan;
+        $kgt_array = explode(" (", $kgt);
+        $nama_kegiatan = trim($kgt_array[0]);
+        $kegiatan[] = $nama_kegiatan;
     }
 
-    $no1 =1;
+    $no1 = 1;
     $max_kegiatan = count($kegiatan);
     for ($i = 0; $i < $max_kegiatan; $i++) {
-        echo $no1 .". ";
-        echo $kegiatan[$i] ." </br>";
+        echo $no1 . ". ";
+        echo $kegiatan[$i] . " </br>";
         $no1++;
     }
 }
 ?>
 
 <?php
-function MendapatkanAwalBulan($mulai_bulan) {
+function MendapatkanAwalBulan($mulai_bulan)
+{
     switch ($mulai_bulan) {
         case 1:
-        return "Januari";
-        break;
+            return "Januari";
+            break;
         case 2:
-        return "Februari";
-        break;
+            return "Februari";
+            break;
         case 3:
-        return "Maret";
-        break;
+            return "Maret";
+            break;
         case 4:
-        return "April";
-        break;
+            return "April";
+            break;
         case 5:
-        return "Mei";
-        break;
+            return "Mei";
+            break;
         case 6:
-        return "Juni";
-        break;
+            return "Juni";
+            break;
         case 7:
-        return "Juli";
-        break;
+            return "Juli";
+            break;
         case 8:
-        return "Agustus";
-        break;
+            return "Agustus";
+            break;
         case 9:
-        return "September";
-        break;
+            return "September";
+            break;
         case 10:
-        return "Oktober";
-        break;
+            return "Oktober";
+            break;
         case 11:
-        return "November";
-        break;
+            return "November";
+            break;
         case 12:
-        return "Desember";
-        break;
+            return "Desember";
+            break;
         default:
-        return "Bulan tidak valid";
-        break;
+            return "Bulan tidak valid";
+            break;
     }
 }
 ?>
 
 <?php
-function MendapatkanAkhirBulan($akhir_bulan) {
+function MendapatkanAkhirBulan($akhir_bulan)
+{
     switch ($akhir_bulan) {
         case 1:
-        return "Januari";
-        break;
+            return "Januari";
+            break;
         case 2:
-        return "Februari";
-        break;
+            return "Februari";
+            break;
         case 3:
-        return "Maret";
-        break;
+            return "Maret";
+            break;
         case 4:
-        return "April";
-        break;
+            return "April";
+            break;
         case 5:
-        return "Mei";
-        break;
+            return "Mei";
+            break;
         case 6:
-        return "Juni";
-        break;
+            return "Juni";
+            break;
         case 7:
-        return "Juli";
-        break;
+            return "Juli";
+            break;
         case 8:
-        return "Agustus";
-        break;
+            return "Agustus";
+            break;
         case 9:
-        return "September";
-        break;
+            return "September";
+            break;
         case 10:
-        return "Oktober";
-        break;
+            return "Oktober";
+            break;
         case 11:
-        return "November";
-        break;
+            return "November";
+            break;
         case 12:
-        return "Desember";
-        break;
+            return "Desember";
+            break;
         default:
-        return "Bulan tidak valid";
-        break;
+            return "Bulan tidak valid";
+            break;
     }
 }
 ?>
 
 <?php
-function StatusAbsensi($status){
-    switch($status) {
-        case 1 : $status="Hadir"; break;
-        case 2 : $status="Izin"; break;
-        case 3 : $status="Tidak Hadir"; break;
+function StatusAbsensi($status)
+{
+    switch ($status) {
+        case 1:
+            $status = "Hadir";
+            break;
+        case 2:
+            $status = "Izin";
+            break;
+        case 3:
+            $status = "Sakit";
+            break;
+        case 4:
+            $status = "Tidak Hadir";
+            break;
     }
     return $status;
-} 
+}
 ?>
