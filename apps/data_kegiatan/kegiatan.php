@@ -5,7 +5,8 @@
             </a></li>
         <li class="active">Kegiatan Harian</li>
     </ol>
-</div><!--/.row-->
+</div>
+<!--/.row-->
 
 <div class="row">
     <div class="col-md-12">
@@ -21,7 +22,8 @@
                     <strong>Periode Kegiatan Harian Selesai</strong>
                 </div>
                 <div class="row">
-                    <form action="#" method="GET" enctype="multipart/form-data"> <!-- Updated to support file upload -->
+                    <form action="#" method="GET" enctype="multipart/form-data">
+                        <!-- Updated to support file upload -->
                         <input type="hidden" name="page" value="kegiatan" />
                         <div class="col-sm-3">
                             <div class="form-group">
@@ -32,13 +34,15 @@
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label>Tanggal Akhir :</label>
-                                <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" required>
+                                <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control"
+                                    required>
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label>Upload Foto Kegiatan:</label> <!-- New input for photo -->
-                                <input type="file" name="foto_kegiatan" id="foto_kegiatan" class="form-control" accept="image/*" required>
+                                <input type="file" name="foto_kegiatan" id="foto_kegiatan" class="form-control"
+                                    accept="image/*" required>
                             </div>
                         </div>
                         <div class="col-sm-3">
@@ -54,21 +58,22 @@
             </div>
         </div>
     </div>
-</div><!--/.row-->
+</div>
+<!--/.row-->
 
 <?php
-    include 'config/database.php';
-    $id_mahasiswa=$_SESSION["id_mahasiswa"];
-    $sql="select * from tbl_mahasiswa where id_mahasiswa=$id_mahasiswa limit 1";
-    $hasil=mysqli_query($kon,$sql);
-    $data = mysqli_fetch_array($hasil);
-    $mulai_magang=$data['mulai_magang'];
-    $akhir_magang=$data['akhir_magang'];
+include 'config/database.php';
+$id_mahasiswa = $_SESSION["id_mahasiswa"];
+$sql = "select * from tbl_mahasiswa where id_mahasiswa=$id_mahasiswa limit 1";
+$hasil = mysqli_query($kon, $sql);
+$data = mysqli_fetch_array($hasil);
+$mulai_magang = $data['mulai_magang'];
+$akhir_magang = $data['akhir_magang'];
 
-    setlocale(LC_TIME, 'id_ID');
-    $tanggal_sekarang = new DateTime();
-    $tanggal_masuk = strftime("%d %B %Y", strtotime($mulai_magang));
-    $tanggal_keluar = strftime("%d %B %Y", strtotime($akhir_magang));
+setlocale(LC_TIME, 'id_ID');
+$tanggal_sekarang = new DateTime();
+$tanggal_masuk = strftime("%d %B %Y", strtotime($mulai_magang));
+$tanggal_keluar = strftime("%d %B %Y", strtotime($akhir_magang));
 ?>
 
 <div class="row">
@@ -94,8 +99,11 @@
                 ?>
 
                 <div class="form-group">
-                    <button id_mahasiswa="<?php echo $_SESSION['id_mahasiswa']; ?>" type="button" class="btn btn-success" id="tombol_kegiatan"><i class="fa fa-plus"></i>  Tambah</button>
-                    <button id_mahasiswa="<?php echo $_SESSION['id_mahasiswa']; ?>" class="cetak_kegiatan btn btn-primary btn-circle" id="cetak_kegiatan"><i class="fa fa-print"></i> Cetak</button>
+                    <button id_mahasiswa="<?php echo $_SESSION['id_mahasiswa']; ?>" type="button"
+                        class="btn btn-success" id="tombol_kegiatan"><i class="fa fa-plus"></i> Tambah</button>
+                    <button id_mahasiswa="<?php echo $_SESSION['id_mahasiswa']; ?>"
+                        class="cetak_kegiatan btn btn-primary btn-circle" id="cetak_kegiatan"><i
+                            class="fa fa-print"></i> Cetak</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -109,54 +117,56 @@
                                 <th class="text-center">Foto Kegiatan</th> <!-- New column for photos -->
                             </tr>
                         </thead>
-        
+
                         <tbody>
-                        <?php
+                            <?php
                             include 'config/database.php';
                             include 'config/function.php';
                             $id_mahasiswa = $_SESSION["id_mahasiswa"];
-                            if (isset($_GET['tanggal_awal']) AND $_GET['tanggal_akhir']) {
+                            if (isset($_GET['tanggal_awal']) and $_GET['tanggal_akhir']) {
                                 $tanggal_awal = $_GET["tanggal_awal"];
                                 $tanggal_akhir = $_GET["tanggal_akhir"];
                                 $sql = MencarikanKegiatan($id_mahasiswa, $tanggal_awal, $tanggal_akhir);
-                            } else { 
+                            } else {
                                 $sql = MenampilkanKegiatan($id_mahasiswa);
-                            }                          
+                            }
                             $hasil = mysqli_query($kon, $sql);
                             $no = 0;
                             while ($data = mysqli_fetch_array($hasil)) {
                                 $no++;
-                        ?>
-                        <tr>
-                            <td class="text-center"><?php echo $no; ?></td>
-                            <td class="text-center"><?php echo MendapatkanHari($data['hari']); ?></td>
-                            <td class="text-center">
-                                <?php 
-                                    $tgl = date("d", strtotime($data['tanggal']));
-                                    $bulan = date("m", strtotime($data['tanggal']));
-                                    $tahun = date("Y", strtotime($data['tanggal']));
-                                    echo $tgl.' '.MendapatkanBulan($bulan).' '.$tahun;
-                                ?>
-                            </td>
-                            <td class="text-center"><?php echo WaktuKegiatan($data['kegiatan']); ?></td>
-                            <td><?php echo BarisKegiatan($data['kegiatan']); ?></td>
-                            <td class="text-center">
-                                <!-- Display the uploaded photo -->
-                                <?php if (isset($data['foto'])): ?>
-                                    <img src="uploads/<?php echo $data['foto']; ?>" width="100" alt="Foto Kegiatan">
-                                <?php else: ?>
-                                    <span>No photo</span>
-                                <?php endif; ?>
-                            </td>                   
-                        </tr>
-                        <?php } ?>
+                            ?>
+                                <tr>
+                                    <td class="text-center"><?php echo $no; ?></td>
+                                    <td class="text-center"><?php echo MendapatkanHari($data['hari']); ?></td>
+                                    <td class="text-center">
+                                        <?php
+                                        $tgl = date("d", strtotime($data['tanggal']));
+                                        $bulan = date("m", strtotime($data['tanggal']));
+                                        $tahun = date("Y", strtotime($data['tanggal']));
+                                        echo $tgl . ' ' . MendapatkanBulan($bulan) . ' ' . $tahun;
+                                        ?>
+                                    </td>
+                                    <td class="text-center"><?php echo WaktuKegiatan($data['kegiatan']); ?></td>
+                                    <td><?php echo BarisKegiatan($data['kegiatan']); ?></td>
+                                    <td class="text-center">
+                                        <!-- Display the uploaded photo -->
+                                        <?php if (isset($data['file_upload'])): ?>
+                                            <img src="uploads/kegiatan/<?php echo $data['file_upload']; ?>" width="100"
+                                                alt="Foto Kegiatan">
+                                        <?php else: ?>
+                                            <span>No photo</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php } ?>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-</div><!--/.row-->
+</div>
+<!--/.row-->
 
 <!-- Modal -->
 <div class="modal fade" id="modal">
@@ -167,38 +177,43 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <div id="tampil_data"></div>  
+                <div id="tampil_data"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i>
+                    Close</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    $('#tombol_kegiatan').on('click', function () {
+    $('#tombol_kegiatan').on('click', function() {
         var id_mahasiswa = $(this).attr("id_mahasiswa");
         $.ajax({
             url: 'apps/pengguna/mulai_kegiatan.php',
             method: 'POST',
-            data: {id_mahasiswa: id_mahasiswa},
-            success: function (data) {
-                $('#tampil_data').html(data);  
+            data: {
+                id_mahasiswa: id_mahasiswa
+            },
+            success: function(data) {
+                $('#tampil_data').html(data);
                 document.getElementById("judul").innerHTML = 'Tambah Kegiatan';
             }
         });
         $('#modal').modal('show');
     });
 
-    $('#cetak_kegiatan').on('click', function () {
+    $('#cetak_kegiatan').on('click', function() {
         var id_mahasiswa = $(this).attr("id_mahasiswa");
         $.ajax({
             url: 'apps/data_kegiatan/cetak.php',
             method: 'POST',
-            data: {id_mahasiswa: id_mahasiswa},
-            success: function (data) {
-                $('#tampil_data').html(data);  
+            data: {
+                id_mahasiswa: id_mahasiswa
+            },
+            success: function(data) {
+                $('#tampil_data').html(data);
                 document.getElementById("judul").innerHTML = 'Cetak Kegiatan';
             }
         });

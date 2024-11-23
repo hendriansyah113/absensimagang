@@ -79,7 +79,7 @@ function AbsensiOtomatis($sql)
 {
     include 'database.php';
     $sql = "SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama, tbl_mahasiswa.universitas, 
-        tbl_mahasiswa.mulai_magang, tbl_mahasiswa.akhir_magang, tbl_absensi.id_absensi, 
+        tbl_mahasiswa.mulai_magang, tbl_mahasiswa.akhir_magang, tbl_absensi.id_absensi, tbl_absensi.foto,
         (CASE
             WHEN tbl_absensi.status IS NULL THEN 'Belum Absensi'
             WHEN tbl_absensi.status = 1 THEN 'Hadir'
@@ -147,9 +147,9 @@ function EditAbsensi($id_absensi)
 function DataKegiatan($sql)
 {
     include 'database.php';
-    $sql = "SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama, 
+    $sql = "SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama,
     tbl_mahasiswa.universitas, tbl_kegiatan.id_kegiatan, 
-    tbl_kegiatan.kegiatan, tbl_kegiatan.tanggal, 
+    tbl_kegiatan.kegiatan, tbl_kegiatan.tanggal,  tbl_kegiatan.file_upload,
     DATE_FORMAT(tbl_kegiatan.tanggal, '%W') AS hari, 
     CONCAT(SUBSTRING(tbl_kegiatan.waktu_awal, 1, 5), ' - ', SUBSTRING(tbl_kegiatan.waktu_akhir, 1, 5)) AS waktu
     FROM tbl_mahasiswa JOIN tbl_kegiatan ON 
@@ -181,15 +181,19 @@ function CariKegiatan($nama, $tanggal_awal, $tanggal_akhir)
 function MenampilkanKegiatan($id_mahasiswa)
 {
     include 'database.php';
-    $sql = "SELECT tbl_kegiatan.id_kegiatan, tbl_kegiatan.id_mahasiswa, 
+    $sql = "SELECT 
+    tbl_kegiatan.id_kegiatan, 
+    tbl_kegiatan.id_mahasiswa, 
+    MAX(tbl_kegiatan.file_upload) AS file_upload, -- Mengambil satu file upload
     DATE_FORMAT(tbl_kegiatan.tanggal, '%d-%M-%Y') AS tanggal, 
     DAYNAME(tbl_kegiatan.tanggal) AS hari, 
     GROUP_CONCAT(CONCAT(tbl_kegiatan.kegiatan, 
-    ' (', tbl_kegiatan.waktu_awal, ' - ', tbl_kegiatan.waktu_akhir, ')') 
+        ' (', tbl_kegiatan.waktu_awal, ' - ', tbl_kegiatan.waktu_akhir, ')') 
     SEPARATOR ', ') AS kegiatan 
-    FROM tbl_kegiatan WHERE tbl_kegiatan.id_mahasiswa = '$id_mahasiswa' 
-    GROUP BY tbl_kegiatan.tanggal, tbl_kegiatan.id_mahasiswa 
-    ORDER BY tbl_kegiatan.tanggal DESC";
+FROM tbl_kegiatan 
+WHERE tbl_kegiatan.id_mahasiswa = '$id_mahasiswa' 
+GROUP BY tbl_kegiatan.tanggal, tbl_kegiatan.id_mahasiswa 
+ORDER BY tbl_kegiatan.tanggal DESC";
     return $sql;
 }
 ?>
@@ -198,7 +202,7 @@ function MenampilkanKegiatan($id_mahasiswa)
 function MencarikanKegiatan($id_mahasiswa, $tanggal_awal, $tanggal_akhir)
 {
     include 'database.php';
-    $sql = "SELECT tbl_kegiatan.id_kegiatan, tbl_kegiatan.id_mahasiswa, 
+    $sql = "SELECT tbl_kegiatan.id_kegiatan, tbl_kegiatan.id_mahasiswa,
     DATE_FORMAT(tbl_kegiatan.tanggal, '%d-%M-%Y') AS tanggal, 
     DAYNAME(tbl_kegiatan.tanggal) AS hari, 
     GROUP_CONCAT(CONCAT(tbl_kegiatan.kegiatan, 
