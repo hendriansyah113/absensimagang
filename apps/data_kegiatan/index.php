@@ -131,47 +131,47 @@ if ($_SESSION["level"] != 'Admin' and $_SESSION["level"] != 'admin') {
                             while ($data = mysqli_fetch_array($hasil)):
                                 $no++;
                             ?>
-                            <tr>
-                                <td><?php echo $no; ?></td>
-                                <td>
-                                    <!-- Display photo if exists, otherwise show default image -->
-                                    <?php if (isset($data['file_upload'])): ?>
-                                    <img src="uploads/kegiatan/<?php echo $data['file_upload']; ?>" width="100"
-                                        alt="Foto Kegiatan">
-                                    <?php else: ?>
-                                    <span>No photo</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo $data['nama']; ?></td>
-                                <td>
-                                    <?php
+                                <tr>
+                                    <td><?php echo $no; ?></td>
+                                    <td>
+                                        <!-- Display photo if exists, otherwise show default image -->
+                                        <?php if (isset($data['file_upload']) && preg_match('/\.(jpg|jpeg|png|gif)$/i', $data['file_upload'])): ?>
+                                            <img src="uploads/kegiatan/<?php echo $data['file_upload']; ?>" width="100"
+                                                alt="Foto Kegiatan">
+                                        <?php else: ?>
+                                            <span>No photo</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo $data['nama']; ?></td>
+                                    <td>
+                                        <?php
                                         $hari = $data["hari"];
                                         echo MendapatkanHari($hari);
                                         ?>
-                                </td>
-                                <td>
-                                    <?php
+                                    </td>
+                                    <td>
+                                        <?php
                                         $tgl = date("d", strtotime($data['tanggal']));
                                         $bulan = date("m", strtotime($data['tanggal']));
                                         $tahun = date("Y", strtotime($data['tanggal']));
                                         echo $tgl . ' ' . MendapatkanBulan($bulan) . ' ' . $tahun
                                         ?>
-                                </td>
-                                <td><?php echo $data['waktu']; ?></td>
-                                <td><?php echo $data['kegiatan']; ?></td>
-                                <td>
-                                    <button id_mahasiswa="<?php echo $data['id_mahasiswa']; ?>"
-                                        id_kegiatan="<?php echo $data['id_kegiatan']; ?>"
-                                        class="ubah_kegiatan cetak btn btn-warning"><i class="fa fa-edit"></i></button>
-                                    <a href="apps/data_kegiatan/hapus.php?id_kegiatan=<?php echo $data['id_kegiatan']; ?>"
-                                        class="btn-hapus-kegiatan btn btn-danger btn-circle"><i
-                                            class="fa fa-trash"></i></a>
-                                    <button id_mahasiswa="<?php echo $data['id_mahasiswa']; ?>"
-                                        class="cetak_kegiatan btn btn-primary btn-circle"><i
-                                            class="fa fa-print"></i></button>
-                                </td>
-                            </tr>
-                            <!-- bagian akhir (penutup) while -->
+                                    </td>
+                                    <td><?php echo $data['waktu']; ?></td>
+                                    <td><?php echo $data['kegiatan']; ?></td>
+                                    <td>
+                                        <button id_mahasiswa="<?php echo $data['id_mahasiswa']; ?>"
+                                            id_kegiatan="<?php echo $data['id_kegiatan']; ?>"
+                                            class="ubah_kegiatan cetak btn btn-warning"><i class="fa fa-edit"></i></button>
+                                        <a href="apps/data_kegiatan/hapus.php?id_kegiatan=<?php echo $data['id_kegiatan']; ?>"
+                                            class="btn-hapus-kegiatan btn btn-danger btn-circle"><i
+                                                class="fa fa-trash"></i></a>
+                                        <button id_mahasiswa="<?php echo $data['id_mahasiswa']; ?>"
+                                            class="cetak_kegiatan btn btn-primary btn-circle"><i
+                                                class="fa fa-print"></i></button>
+                                    </td>
+                                </tr>
+                                <!-- bagian akhir (penutup) while -->
                             <?php endwhile; ?>
                         </tbody>
                     </table>
@@ -207,71 +207,71 @@ if ($_SESSION["level"] != 'Admin' and $_SESSION["level"] != 'admin') {
 </div>
 
 <script>
-// Tambah kegiatan dari admin
-$('#tambah_kegiatan').on('click', function() {
-    $.ajax({
-        url: 'apps/data_kegiatan/tambah.php',
-        method: 'post',
-        success: function(data) {
-            $('#tampil_data').html(data);
-            document.getElementById("judul").innerHTML = 'Tambah Kegiatan';
-        }
+    // Tambah kegiatan dari admin
+    $('#tambah_kegiatan').on('click', function() {
+        $.ajax({
+            url: 'apps/data_kegiatan/tambah.php',
+            method: 'post',
+            success: function(data) {
+                $('#tampil_data').html(data);
+                document.getElementById("judul").innerHTML = 'Tambah Kegiatan';
+            }
+        });
+        // Membuka modal
+        $('#modal').modal('show');
     });
-    // Membuka modal
-    $('#modal').modal('show');
-});
 </script>
 
 <script>
-// Mengubah kegiatan dari admin
-$('.ubah_kegiatan').on('click', function() {
-    var id_mahasiswa = $(this).attr("id_mahasiswa");
-    var id_kegiatan = $(this).attr("id_kegiatan");
-    $.ajax({
-        url: 'apps/data_kegiatan/edit.php',
-        method: 'POST',
-        data: {
-            id_mahasiswa: id_mahasiswa,
-            id_kegiatan: id_kegiatan
-        },
-        success: function(data) {
-            $('#tampil_data').html(data);
-            document.getElementById("judul").innerHTML = 'Edit Kegiatan';
-        }
+    // Mengubah kegiatan dari admin
+    $('.ubah_kegiatan').on('click', function() {
+        var id_mahasiswa = $(this).attr("id_mahasiswa");
+        var id_kegiatan = $(this).attr("id_kegiatan");
+        $.ajax({
+            url: 'apps/data_kegiatan/edit.php',
+            method: 'POST',
+            data: {
+                id_mahasiswa: id_mahasiswa,
+                id_kegiatan: id_kegiatan
+            },
+            success: function(data) {
+                $('#tampil_data').html(data);
+                document.getElementById("judul").innerHTML = 'Edit Kegiatan';
+            }
+        });
+        // Membuka modal
+        $('#modal').modal('show');
     });
-    // Membuka modal
-    $('#modal').modal('show');
-});
 </script>
 
 <script>
-// fungsi hapus mahasiswa
-$('.btn-hapus-kegiatan').on('click', function() {
-    konfirmasi = confirm("Yakin ingin menghapus kegiatan ini?")
-    if (konfirmasi) {
-        return true;
-    } else {
-        return false;
-    }
-});
+    // fungsi hapus mahasiswa
+    $('.btn-hapus-kegiatan').on('click', function() {
+        konfirmasi = confirm("Yakin ingin menghapus kegiatan ini?")
+        if (konfirmasi) {
+            return true;
+        } else {
+            return false;
+        }
+    });
 </script>
 
 <script>
-// cetak absensi
-$('.cetak_kegiatan').on('click', function() {
-    var id_mahasiswa = $(this).attr("id_mahasiswa");
-    $.ajax({
-        url: 'apps/data_kegiatan/cetak.php',
-        method: 'POST',
-        data: {
-            id_mahasiswa: id_mahasiswa
-        },
-        success: function(data) {
-            $('#tampil_data').html(data);
-            document.getElementById("judul").innerHTML = 'Cetak Kegiatan';
-        }
+    // cetak absensi
+    $('.cetak_kegiatan').on('click', function() {
+        var id_mahasiswa = $(this).attr("id_mahasiswa");
+        $.ajax({
+            url: 'apps/data_kegiatan/cetak.php',
+            method: 'POST',
+            data: {
+                id_mahasiswa: id_mahasiswa
+            },
+            success: function(data) {
+                $('#tampil_data').html(data);
+                document.getElementById("judul").innerHTML = 'Cetak Kegiatan';
+            }
+        });
+        // Membuka modal
+        $('#modal').modal('show');
     });
-    // Membuka modal
-    $('#modal').modal('show');
-});
 </script>
