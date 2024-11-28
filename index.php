@@ -1,44 +1,44 @@
 <?php
-    //Memulai sesi
-    session_start();
-    //Jika kode pengguna di session kosong maka kembali ke login
-    if (!$_SESSION["kode_pengguna"]){
-        header("Location:login.php");
+//Memulai sesi
+session_start();
+//Jika kode pengguna di session kosong maka kembali ke login
+if (!$_SESSION["kode_pengguna"]) {
+    header("Location:login.php");
     //Jika kode pengguna ada maka akan di proses masuk ke halaman utama
-    } else {
-        //Menghubungkan database
-        include 'config/database.php';
-        //Mengambil variable dari session 
-        $kode_pengguna=$_SESSION["kode_pengguna"];
-        $username=$_SESSION["username"];
-        //Query untuk menampilkan nama ke halaman utama
-        $hasil=mysqli_query($kon,"select username from tbl_user where kode_pengguna='$kode_pengguna'");
-        //Menyimpan data query ke variable data
-        $data = mysqli_fetch_array($hasil); 
-        //Menyimpan data username ke variable username
-        $username_db=$data['username'];
+} else {
+    //Menghubungkan database
+    include 'config/database.php';
+    //Mengambil variable dari session 
+    $kode_pengguna = $_SESSION["kode_pengguna"];
+    $username = $_SESSION["username"];
+    //Query untuk menampilkan nama ke halaman utama
+    $hasil = mysqli_query($kon, "select username from tbl_user where kode_pengguna='$kode_pengguna'");
+    //Menyimpan data query ke variable data
+    $data = mysqli_fetch_array($hasil);
+    //Menyimpan data username ke variable username
+    $username_db = $data['username'];
     //Jika username kosong maka session akan di hapus
-    if ($username!=$username_db){
+    if ($username != $username_db) {
         //Menghapus session
         session_unset();
         session_destroy();
         //Mengalihkan page ke halaman login
         header("Location:login.php");
     }
-    }
+}
 ?>
 
 <?php
-    //Menghubungkan database
-    include 'config/database.php';
-    //Query untuk menampilkan table tbl_site
-    $query = mysqli_query($kon, "select * from tbl_site limit 1");    
-    //Menyimpan hasil query ke variable
-    $row = mysqli_fetch_array($query);
-    //Menyimpan nama instansi dari tbl_site
-    $nama_instansi=$row['nama_instansi'];
-    //Menyimpan logo dari tbl_site
-    $logo=$row['logo'];
+//Menghubungkan database
+include 'config/database.php';
+//Query untuk menampilkan table tbl_site
+$query = mysqli_query($kon, "select * from tbl_site limit 1");
+//Menyimpan hasil query ke variable
+$row = mysqli_fetch_array($query);
+//Menyimpan nama instansi dari tbl_site
+$nama_instansi = $row['nama_instansi'];
+//Menyimpan logo dari tbl_site
+$logo = $row['logo'];
 ?>
 
 <!DOCTYPE html>
@@ -68,26 +68,26 @@
     <link href="src/font/font.css" rel="stylesheet" type="text/css">
     <!-- Custom CSS -->
     <style>
-    .no-js #loader {
-        display: none;
-    }
+        .no-js #loader {
+            display: none;
+        }
 
-    .js #loader {
-        display: block;
-        position: absolute;
-        left: 100px;
-        top: 0;
-    }
+        .js #loader {
+            display: block;
+            position: absolute;
+            left: 100px;
+            top: 0;
+        }
 
-    .se-pre-con {
-        position: fixed;
-        left: 0px;
-        top: 0px;
-        width: 100%;
-        height: 100%;
-        z-index: 9999;
-        background: url('loading.gif') center no-repeat #fff;
-    }
+        .se-pre-con {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: url('loading.gif') center no-repeat #fff;
+        }
     </style>
 </head>
 
@@ -123,34 +123,34 @@
     </nav>
     <div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
         <!-- Menampilkan info nama dan level admin di navbar -->
-        <?php if ($_SESSION['level']=='Admin' or $_SESSION['level']=='admin'):?>
-        <div class="profile-sidebar">
-            <div class="profile-userpic">
-                <img src="source/img/profile.png" class="img-responsive" alt="">
+        <?php if ($_SESSION['level'] == 'Admin' or $_SESSION['level'] == 'admin'): ?>
+            <div class="profile-sidebar">
+                <div class="profile-userpic">
+                    <img src="source/img/profile.png" class="img-responsive" alt="">
+                </div>
+                <div class="profile-usertitle">
+                    <?php echo substr($_SESSION['nama_admin'], 0, 20); ?>
+                    <div class="profile-usertitle-name"><?php echo "Administrator"; ?></div>
+                    <div></div>
+                </div>
+                <div class="clear"></div>
             </div>
-            <div class="profile-usertitle">
-                <?php echo substr($_SESSION['nama_admin'],0,20); ?>
-                <div class="profile-usertitle-name"><?php echo "Administrator"; ?></div>
-                <div></div>
-            </div>
-            <div class="clear"></div>
-        </div>
         <?php endif; ?>
         <!-- Menampilkan info nama dan level admin di navbar -->
 
         <!-- Menampilkan info nama dan level mahasiswa di navbar -->
-        <?php if ($_SESSION['level']=='Mahasiswa' or $_SESSION['level']=='mahasiswa'):?>
-        <div class="profile-sidebar">
-            <div class="profile-userpic">
-                <img src="apps/mahasiswa/foto/<?php echo $_SESSION['foto'];?>" class="img-responsive" alt="">
+        <?php if ($_SESSION['level'] == 'Mahasiswa' or $_SESSION['level'] == 'mahasiswa'): ?>
+            <div class="profile-sidebar">
+                <div class="profile-userpic">
+                    <img src="apps/mahasiswa/foto/<?php echo $_SESSION['foto']; ?>" class="img-responsive" alt="">
+                </div>
+                <div class="profile-usertitle">
+                    <?php echo substr($_SESSION['nama_mahasiswa'], 0, 20); ?>
+                    <div class="profile-usertitle-name"><?php echo "Mahasiswa"; ?></div>
+                    <div></div>
+                </div>
+                <div class="clear"></div>
             </div>
-            <div class="profile-usertitle">
-                <?php echo substr($_SESSION['nama_mahasiswa'],0,20); ?>
-                <div class="profile-usertitle-name"><?php echo "Mahasiswa"; ?></div>
-                <div></div>
-            </div>
-            <div class="clear"></div>
-        </div>
         <?php endif;  ?>
         <!-- Menampilkan info nama dan level mahasiswa di navbar -->
 
@@ -161,26 +161,28 @@
             <li><a href='index.php?page=beranda'><em class='fa fa-home'>&nbsp;</em> Beranda</a></li>
             <!-- Menu Beranda -->
             <!-- Menu Admin -->
-            <?php if ($_SESSION["level"]=="Admin" or $_SESSION['level']=='admin'): ?>
-            <li>
-                <a href="index.php?page=mahasiswa" id="mahasiswa" style="font-size: 14px;"><em
-                        class="fa fa-users">&nbsp;</em> Data Mahasiswa/Siswa</a>
-            </li>
-            <li><a href="index.php?page=data_absensi" id="data_absensi"><em class="fa fa-calendar">&nbsp;</em> Data
-                    Absensi</a></li>
-            <li><a href="index.php?page=data_kegiatan" id="kegiatan"><em class="fa fa-book">&nbsp;</em> Data
-                    Kegiatan</a></li>
-            <li><a href="index.php?page=admin" id="admin"><em class="fa fa-user">&nbsp;</em> Administrator</a></li>
-            <li><a href="index.php?page=pengaturan" id="pengaturan"><em class="fa fa-gear">&nbsp;</em> Pengaturan</a>
-            </li>
+            <?php if ($_SESSION["level"] == "Admin" or $_SESSION['level'] == 'admin'): ?>
+                <li>
+                    <a href="index.php?page=mahasiswa" id="mahasiswa" style="font-size: 14px;"><em
+                            class="fa fa-users">&nbsp;</em> Data Mahasiswa/Siswa</a>
+                </li>
+                <li><a href="index.php?page=data_absensi" id="data_absensi"><em class="fa fa-calendar">&nbsp;</em> Data
+                        Absensi</a></li>
+                <li><a href="index.php?page=data_kegiatan" id="kegiatan"><em class="fa fa-book">&nbsp;</em> Data
+                        Kegiatan</a></li>
+                <li><a href="index.php?page=admin" id="admin"><em class="fa fa-user">&nbsp;</em> Administrator</a></li>
+                <li><a href="index.php?page=pengaturan" id="pengaturan"><em class="fa fa-gear">&nbsp;</em> Pengaturan</a>
+                <li><a href="index.php?page=koordinat" id="koordinat"><em class="fa fa-map">&nbsp;</em>
+                        Koordinat</a>
+                </li>
             <?php endif; ?>
             <!-- Menu Admin -->
             <!-- Menu Mahasiswa -->
-            <?php  if ($_SESSION["level"]=="Mahasiswa" or $_SESSION["level"]=="mahasiswa"): ?>
-            <li><a href="index.php?page=absen"><em class="fa fa-calendar-check-o">&nbsp;</em> Absensi</a></li>
-            <li><a href="index.php?page=riwayat"><em class="fa fa-history">&nbsp;</em> Riwayat Absensi</a></li>
-            <li><a href="index.php?page=kegiatan"><em class="fa fa-book">&nbsp;</em> Kegiatan Harian</a></li>
-            <li><a href="index.php?page=profil"><em class="fa fa-user-circle-o">&nbsp;</em> Profil</a></li>
+            <?php if ($_SESSION["level"] == "Mahasiswa" or $_SESSION["level"] == "mahasiswa"): ?>
+                <li><a href="index.php?page=absen"><em class="fa fa-calendar-check-o">&nbsp;</em> Absensi</a></li>
+                <li><a href="index.php?page=riwayat"><em class="fa fa-history">&nbsp;</em> Riwayat Absensi</a></li>
+                <li><a href="index.php?page=kegiatan"><em class="fa fa-book">&nbsp;</em> Kegiatan Harian</a></li>
+                <li><a href="index.php?page=profil"><em class="fa fa-user-circle-o">&nbsp;</em> Profil</a></li>
             <?php endif; ?>
             <!-- Menu Mahasiswa -->
             <!-- Menu Keluar -->
@@ -192,8 +194,8 @@
 
     <!-- Page Penghubung -->
     <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
-        <?php 
-        if(isset($_GET['page'])){
+        <?php
+        if (isset($_GET['page'])) {
             $page = $_GET['page'];
             switch ($page) {
                 case 'beranda':
@@ -214,6 +216,9 @@
                 case 'pengaturan':
                     include "apps/pengaturan/index.php";
                     break;
+                case 'koordinat':
+                    include "apps/koordinat/index.php";
+                    break;
                 case 'absen':
                     include "apps/pengguna/absen.php";
                     break;
@@ -227,11 +232,11 @@
                     include "apps/pengguna/profil.php";
                     break;
                 default:
-                echo "<center><h3>Maaf. Halaman Tidak Di Temukan !</h3></center>";
-                break;
+                    echo "<center><h3>Maaf. Halaman Tidak Di Temukan !</h3></center>";
+                    break;
             }
         }
-    ?>
+        ?>
         <!-- Function Page Penghubung -->
 
         <!--/.row-->
@@ -252,15 +257,15 @@
     <!-- Java Script -->
 
     <script>
-    // konfirmasi sebelum keluar aplikasi
-    $('#keluar').on('click', function() {
-        konfirmasi = confirm("Apakah Anda Yakin Ingin Keluar?")
-        if (konfirmasi) {
-            return true;
-        } else {
-            return false;
-        }
-    });
+        // konfirmasi sebelum keluar aplikasi
+        $('#keluar').on('click', function() {
+            konfirmasi = confirm("Apakah Anda Yakin Ingin Keluar?")
+            if (konfirmasi) {
+                return true;
+            } else {
+                return false;
+            }
+        });
     </script>
 </body>
 
