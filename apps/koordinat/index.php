@@ -77,9 +77,6 @@ if ($_SESSION["level"] != 'Admin' and $_SESSION["level"] != 'admin') {
         const value = input.value;
         const regex = /^[0-9]*\.?[0-9]*$/; // Hanya angka dan titik desimal
 
-        if (!regex.test(value)) {
-            input.value = value.slice(0, -1); // Hapus karakter terakhir jika invalid
-        }
     }
 
     // Validasi sebelum submit form

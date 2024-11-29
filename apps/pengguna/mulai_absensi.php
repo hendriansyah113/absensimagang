@@ -155,6 +155,14 @@ $query = "SELECT COUNT(*) FROM tbl_absensi WHERE tanggal = '$tanggal_sekarang' A
 $result = mysqli_query($kon, $query);
 $data = mysqli_fetch_assoc($result);
 $absensi_sudah = $data['COUNT(*)'] > 0 ? "disabled" : "";
+
+$querykoordinat = "SELECT * FROM tbl_koordinat WHERE id_koordinat = 1"; // Ganti sesuai kebutuhan Anda
+$result = mysqli_query($kon, $querykoordinat);
+$row = mysqli_fetch_assoc($result);
+
+$allowedLat = $row['latitude'];
+$allowedLng = $row['longitude'];
+$allowedRadius = $row['radius'];
 ?>
 
 <form action="apps/pengguna/mulai_absensi.php" method="post" enctype="multipart/form-data">
@@ -169,6 +177,7 @@ $absensi_sudah = $data['COUNT(*)'] > 0 ? "disabled" : "";
                     <option value="Hadir">Hadir</option>
                     <option value="Izin">Izin</option>
                     <option value="Sakit">Sakit</option>
+
                 </select>
             </div>
         </div>
@@ -278,13 +287,17 @@ $absensi_sudah = $data['COUNT(*)'] > 0 ? "disabled" : "";
 
         // Fungsi untuk mengecek radius
         function checkRadius() {
+            // Koordinat yang diambil dari PHP
+            var allowedLattbl = <?php echo $allowedLat; ?>;
+            var allowedLngtbl = <?php echo $allowedLng; ?>;
+            var allowedRadiustbl = <?php echo $allowedRadius; ?>;
             var userLatitude = parseFloat($('#latitude').val());
             var userLongitude = parseFloat($('#longitude').val());
 
             // Koordinat lokasi yang diizinkan (misalnya kantor)
-            var allowedLatitude = -2.204598045273787;
-            var allowedLongitude = 113.91863623695271;
-            var allowedRadius = 3000; // Radius dalam meter
+            var allowedLatitude = allowedLattbl;
+            var allowedLongitude = allowedLngtbl;
+            var allowedRadius = allowedRadiustbl; // Radius dalam meter
 
             // Hitung jarak antara lokasi user dan lokasi yang diizinkan
             var distance = calculateDistance(userLatitude, userLongitude, allowedLatitude, allowedLongitude);
