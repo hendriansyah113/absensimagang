@@ -55,15 +55,15 @@ $pdf->Cell(31, 6, ': ' . $data['jurusan'], 0, 1);
 
 // Mengurangi jumlah kolom agar tabel tidak terlalu lebar
 $pdf->Cell(10, 3, '', 0, 1);
-$pdf->SetFont('Arial', 'B', 6);
+$pdf->SetFont('Arial', 'B', 8);
 $pdf->Cell(5, 4, 'No', 1, 0, 'C');
 $pdf->Cell(25, 4, 'Foto', 1, 0, 'C');
-$pdf->Cell(30, 4, 'Nama', 1, 0, 'C');
-$pdf->Cell(30, 4, 'Tanggal & Hari', 1, 0, 'C');
+$pdf->Cell(40, 4, 'Tanggal & Hari', 1, 0, 'C');
 $pdf->Cell(20, 4, 'Jam', 1, 0, 'C');
-$pdf->Cell(90, 4, 'Kegiatan', 1, 1, 'C');
+$pdf->Cell(50, 4, 'Kegiatan 1', 1, 0, 'C');
+$pdf->Cell(50, 4, 'Kegiatan 2', 1, 1, 'C');
 
-$pdf->SetFont('Arial', '', 6);
+$pdf->SetFont('Arial', '', 8);
 
 $no = 0;
 
@@ -76,7 +76,8 @@ $sql = "SELECT
     DAYNAME(tbl_kegiatan.tanggal) AS hari, 
     tbl_kegiatan.waktu_awal, 
     tbl_kegiatan.waktu_akhir, 
-    tbl_kegiatan.kegiatan
+    tbl_kegiatan.kegiatan1,
+    tbl_kegiatan.kegiatan2
 FROM 
     tbl_kegiatan 
 INNER JOIN 
@@ -131,10 +132,10 @@ while ($data = mysqli_fetch_assoc($hasil)) {
     }
 
     // Tambahkan data lainnya dengan tinggi yang sama dengan tinggi baris
-    $pdf->Cell(30, $tinggiBaris, $data["nama"], 1, 0, 'C');
-    $pdf->Cell(30, $tinggiBaris, $tanggal, 1, 0, 'C');
+    $pdf->Cell(40, $tinggiBaris, $tanggal, 1, 0, 'C');
     $pdf->Cell(20, $tinggiBaris, $waktu_awal . ' - ' . $waktu_akhir, 1, 0, 'C');
-    $pdf->Cell(90, $tinggiBaris, $data["kegiatan"], 1, 1);
+    $pdf->Cell(50, $tinggiBaris, $data["kegiatan1"], 1, 0, 'C');
+    $pdf->Cell(50, $tinggiBaris, $data["kegiatan2"], 1, 1, 'C');
 }
 
 
