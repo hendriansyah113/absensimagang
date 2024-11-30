@@ -5,7 +5,8 @@ if (isset($_POST['simpan_kegiatan'])) {
     $tanggal = $_POST['tanggal'];
     $waktu_awal = $_POST['waktu_awal'];
     $waktu_akhir = $_POST['waktu_akhir'];
-    $kegiatan = $_POST['kegiatan'];
+    $kegiatan1 = $_POST['kegiatan1'];
+    $kegiatan2 = $_POST['kegiatan2'];
 
     // Validasi dan proses upload file
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
@@ -23,7 +24,7 @@ if (isset($_POST['simpan_kegiatan'])) {
             move_uploaded_file($_FILES['foto']['tmp_name'], $upload_dir . $unique_name);
 
             // Simpan data kegiatan ke database
-            $sql = "INSERT INTO tbl_kegiatan (id_mahasiswa, tanggal, waktu_awal, waktu_akhir, kegiatan, file_upload) VALUES ('$id_mahasiswa', '$tanggal', '$waktu_awal', '$waktu_akhir', '$kegiatan', '$unique_name')";
+            $sql = "INSERT INTO tbl_kegiatan (id_mahasiswa, tanggal, waktu_awal, waktu_akhir, kegiatan1, kegiatan2, file_upload) VALUES ('$id_mahasiswa', '$tanggal', '$waktu_awal', '$waktu_akhir', '$kegiatan1', '$kegiatan2', '$unique_name')";
             $result = mysqli_query($kon, $sql);
             if ($result) {
                 echo "<script>alert('Kegiatan berhasil disimpan!'); window.location.href = 'http://localhost/absensimagang/index.php?page=data_kegiatan';</script>";
@@ -78,9 +79,20 @@ if (isset($_POST['simpan_kegiatan'])) {
         </div>
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Kegiatan :</label>
-                <input type="text" name="kegiatan" id="kegiatan" class="form-control" required
-                    placeholder="Masukkan Kegiatan Harian">
+                <label for="kegiatan1">Kegiatan 1:</label>
+                <select name="kegiatan1" id="kegiatan1" class="form-control" required>
+                    <option value="" disabled selected>Pilih Kegiatan Anda</option>
+                    <option value="Menyalakan komputer layanan pagi">Menyalakan komputer layanan pagi</option>
+                    <option value="Memasukkan berita">Memasukkan berita</option>
+                    <option value="Merancang sebuah website">Merancang sebuah website</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label for="kegiatan2">Kegiatan 2:</label>
+                <textarea name="kegiatan2" id="kegiatan2" class="form-control" rows="5"
+                    placeholder="Masukkan kegiatan lainnya" required></textarea>
             </div>
         </div>
         <div class="col-sm-12">

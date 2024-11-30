@@ -106,7 +106,7 @@ function AbsensiOtomatis($sql)
 function PencarianAbsensi($nama, $tanggal_awal, $tanggal_akhir)
 {
     include 'database.php';
-    $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.id_mahasiswa, 
+    $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.foto, tbl_absensi.id_mahasiswa, 
     COALESCE(CASE tbl_absensi.status 
         WHEN 1 THEN 'Hadir' 
         WHEN 2 THEN 'Izin' 
@@ -120,7 +120,6 @@ function PencarianAbsensi($nama, $tanggal_awal, $tanggal_akhir)
         ON tbl_absensi.id_mahasiswa = tbl_mahasiswa.id_mahasiswa 
     WHERE tbl_mahasiswa.mulai_magang <= CURDATE() AND 
         tbl_mahasiswa.akhir_magang >= CURDATE() AND 
-    DAYNAME(tbl_absensi.tanggal) NOT IN ('Saturday', 'Sunday') AND 
         tbl_mahasiswa.nama LIKE '%$nama%' AND
         tbl_absensi.tanggal >= '$tanggal_awal' AND
         tbl_absensi.tanggal <= '$tanggal_akhir'
@@ -149,13 +148,14 @@ function DataKegiatan($sql)
     include 'database.php';
     $sql = "SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama,
     tbl_mahasiswa.universitas, tbl_kegiatan.id_kegiatan, 
-    tbl_kegiatan.kegiatan, tbl_kegiatan.tanggal,  tbl_kegiatan.file_upload,
+    tbl_kegiatan.kegiatan1, tbl_kegiatan.kegiatan2, tbl_kegiatan.tanggal,  tbl_kegiatan.file_upload,
     DATE_FORMAT(tbl_kegiatan.tanggal, '%W') AS hari, 
     CONCAT(SUBSTRING(tbl_kegiatan.waktu_awal, 1, 5), ' - ', SUBSTRING(tbl_kegiatan.waktu_akhir, 1, 5)) AS waktu
     FROM tbl_mahasiswa JOIN tbl_kegiatan ON 
     tbl_mahasiswa.id_mahasiswa = tbl_kegiatan.id_mahasiswa 
     ORDER BY tbl_kegiatan.tanggal DESC";
     return $sql;
+    $kegiatan1 = $_POST["kegiatan1"];
 }
 ?>
 
@@ -181,19 +181,36 @@ function CariKegiatan($nama, $tanggal_awal, $tanggal_akhir)
 function MenampilkanKegiatan($id_mahasiswa)
 {
     include 'database.php';
-    $sql = "SELECT 
-    tbl_kegiatan.id_kegiatan, 
-    tbl_kegiatan.id_mahasiswa, 
-    MAX(tbl_kegiatan.file_upload) AS file_upload, -- Mengambil satu file upload
-    DATE_FORMAT(tbl_kegiatan.tanggal, '%d-%M-%Y') AS tanggal, 
-    DAYNAME(tbl_kegiatan.tanggal) AS hari, 
-    GROUP_CONCAT(CONCAT(tbl_kegiatan.kegiatan, 
-        ' (', tbl_kegiatan.waktu_awal, ' - ', tbl_kegiatan.waktu_akhir, ')') 
-    SEPARATOR ', ') AS kegiatan 
-FROM tbl_kegiatan 
-WHERE tbl_kegiatan.id_mahasiswa = '$id_mahasiswa' 
-GROUP BY tbl_kegiatan.tanggal, tbl_kegiatan.id_mahasiswa 
-ORDER BY tbl_kegiatan.tanggal DESC";
+    $sql = "
+    SELECT 
+        tbl_kegiatan.id_kegiatan, 
+        tbl_kegiatan.id_mahasiswa, 
+        MAX(tbl_kegiatan.file_upload) AS file_upload,
+        DATE_FORMAT(tbl_kegiatan.tanggal, '%d-%M-%Y') AS tanggal, 
+        DAYNAME(tbl_kegiatan.tanggal) AS hari, 
+        GROUP_CONCAT(
+            CONCAT('Kegiatan 1: ', tbl_kegiatan.kegiatan1, 
+                ' (', tbl_kegiatan.waktu_awal, ' - ', tbl_kegiatan.waktu_akhir, ')')
+            SEPARATOR ', '
+        ) AS kegiatan1_detail,
+        GROUP_CONCAT(
+            CONCAT('Kegiatan 2: ', tbl_kegiatan.kegiatan2, 
+                ' (', tbl_kegiatan.waktu_awal, ' - ', tbl_kegiatan.waktu_akhir, ')')
+            SEPARATOR ', '
+        ) AS kegiatan2_detail,
+       GROUP_CONCAT(
+        CONCAT(
+            'Kegiatan 1: ', IFNULL(tbl_kegiatan.kegiatan1, ''),
+            ', Kegiatan 2: ', IFNULL(tbl_kegiatan.kegiatan2, '')
+        )
+        SEPARATOR '<br>'
+    ) AS semua_kegiatan
+    FROM tbl_kegiatan 
+    WHERE tbl_kegiatan.id_mahasiswa = '$id_mahasiswa' 
+    GROUP BY tbl_kegiatan.tanggal, tbl_kegiatan.id_mahasiswa 
+    ORDER BY tbl_kegiatan.tanggal DESC
+    ";
+
     return $sql;
 }
 ?>
@@ -258,6 +275,24 @@ function BarisKegiatan($string_kegiatan)
     }
 }
 ?>
+<?php
+function BarisKegiatan1dan2($data_kegiatan)
+{
+    $no = 1; // Nomor awal
+    foreach ($data_kegiatan as $row) {
+        // Gabungkan kegiatan1 dan kegiatan2 dari setiap baris
+        $kegiatan = array($row['kegiatan1'], $row['kegiatan2']);
+
+        foreach ($kegiatan as $kgt) {
+            if (!empty($kgt)) { // Cek jika kegiatan tidak kosong
+                echo $no . ". " . htmlspecialchars($kgt) . "<br>";
+                $no++;
+            }
+        }
+    }
+}
+?>
+
 
 <?php
 function MendapatkanAwalBulan($mulai_bulan)

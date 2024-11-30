@@ -138,8 +138,12 @@ if ($_SESSION["level"] != 'Admin' and $_SESSION["level"] != 'admin') {
                                         ?>
                                     </td>
                                     <td class="text-center">
-                                        <img src="uploads/<?php echo $data['foto']; ?>" alt="Foto Absen"
-                                            style="width:50px; height:50px;">
+                                        <?php if (!empty($data['foto'])): ?>
+                                            <img src="uploads/<?php echo $data['foto']; ?>" alt="Foto Absen"
+                                                style="width:50px; height:50px;">
+                                        <?php else: ?>
+                                            Foto tidak ada
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <button id_mahasiswa="<?php echo $data['id_mahasiswa']; ?>"

@@ -61,15 +61,16 @@ $pdf->Cell(31, 6, ': ' . $data['jurusan'], 0, 1);
 $pdf->Cell(10, 3, '', 0, 1);
 $pdf->SetFont('Arial', 'B', 10);
 $pdf->Cell(10, 6, 'No', 1, 0, 'C');
-$pdf->Cell(40, 6, 'Hari', 1, 0, 'C');
-$pdf->Cell(50, 6, 'Tanggal', 1, 0, 'C');
-$pdf->Cell(47, 6, 'Waktu', 1, 0, 'C');
-$pdf->Cell(48, 6, 'Keterangan', 1, 1, 'C');
+$pdf->Cell(30, 6, 'Hari', 1, 0, 'C');
+$pdf->Cell(40, 6, 'Tanggal', 1, 0, 'C');
+$pdf->Cell(30, 6, 'Waktu', 1, 0, 'C');
+$pdf->Cell(48, 6, 'Keterangan', 1, 0, 'C');
+$pdf->Cell(30, 6, 'Foto', 1, 1, 'C');
 $pdf->SetFont('Arial', '', 10);
 
 $no = 0;
 
-$sql = "SELECT id_absensi, id_mahasiswa, status, tanggal, waktu,
+$sql = "SELECT id_absensi, foto, id_mahasiswa, status, tanggal, waktu,
     DATE_FORMAT(tanggal, '%W') AS hari 
     FROM tbl_absensi WHERE id_mahasiswa = $id_mahasiswa AND 
     tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir'
@@ -77,7 +78,6 @@ $sql = "SELECT id_absensi, id_mahasiswa, status, tanggal, waktu,
 $hasil = mysqli_query($kon, $sql);
 
 while ($data = mysqli_fetch_assoc($hasil)) {
-
     $waktu = date("h:i", strtotime($data['waktu']));
     $status = $data['status'];
     $hari = $data['hari'];
@@ -86,12 +86,37 @@ while ($data = mysqli_fetch_assoc($hasil)) {
     $tahun = date("Y", strtotime($data['tanggal']));
 
     $no++;
-    $pdf->Cell(10, 6, $no, 1, 0, 'C');
-    $pdf->Cell(40, 6, MendapatkanHari($hari), 1, 0, 'C');
-    $pdf->Cell(50, 6, $tgl . ' ' . MendapatkanBulan($bulan) . ' ' . $tahun . '', 1, 0, 'C');
-    $pdf->Cell(47, 6, $waktu, 1, 0, 'C');
-    $pdf->Cell(48, 6, StatusAbsensi($status), 1, 1, 'C');
+
+    // Tentukan tinggi baris
+    $tinggi_baris = (!empty($data['foto']) && file_exists('../../uploads/' . $data['foto'])) ? 20 : 6;
+
+    // Cell kolom biasa
+    $pdf->Cell(10, $tinggi_baris, $no, 1, 0, 'C');
+    $pdf->Cell(30, $tinggi_baris, MendapatkanHari($hari), 1, 0, 'C');
+    $pdf->Cell(40, $tinggi_baris, $tgl . ' ' . MendapatkanBulan($bulan) . ' ' . $tahun, 1, 0, 'C');
+    $pdf->Cell(30, $tinggi_baris, $waktu, 1, 0, 'C');
+    $pdf->Cell(48, $tinggi_baris, StatusAbsensi($status), 1, 0, 'C');
+
+    // Kolom untuk foto
+    if (!empty($data['foto']) && file_exists('../../uploads/' . $data['foto'])) {
+        // Simpan posisi awal X dan Y untuk sel
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        // Buat sel untuk gambar
+        $pdf->Cell(30, $tinggi_baris, '', 1, 0, 'C');
+
+        // Tempatkan gambar di tengah sel
+        $pdf->Image('../../uploads/' . $data['foto'], $x + 2.5, $y + 2.5, 15, 15); // Padding 2.5 untuk memposisikan di tengah
+    } else {
+        // Jika tidak ada foto
+        $pdf->Cell(30, $tinggi_baris, 'Foto tidak tersedia', 1, 0, 'C');
+    }
+
+    // Pindah ke baris berikutnya
+    $pdf->Ln();
 }
+
 
 $tanggal = date('Y-m-d');
 $pdf->SetFont('Arial', '', 10);

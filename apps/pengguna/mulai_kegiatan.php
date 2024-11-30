@@ -13,7 +13,8 @@ if (isset($_POST['simpan_kegiatan'])) {
 
     $id_mahasiswa = $_SESSION["id_mahasiswa"];
     date_default_timezone_set("Asia/Jakarta");
-    $kegiatan = $_POST["kegiatan"];
+    $kegiatan1 = $_POST["kegiatan1"];
+    $kegiatan2 = $_POST["kegiatan2"];
     $waktu_awal = $_POST["waktu_awal"];
     $waktu_akhir = $_POST["waktu_akhir"];
     $tanggal = date("Y-m-d");
@@ -52,8 +53,8 @@ if (isset($_POST['simpan_kegiatan'])) {
             // Simpan data ke database
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-                $sql = "INSERT INTO tbl_kegiatan (id_mahasiswa, kegiatan, waktu_awal, waktu_akhir, tanggal, file_upload) 
-                    VALUES ('$id_mahasiswa','$kegiatan','$waktu_awal','$waktu_akhir','$tanggal','$uniq_name')";
+                $sql = "INSERT INTO tbl_kegiatan (id_mahasiswa, waktu_awal, waktu_akhir, tanggal, kegiatan1, kegiatan2, file_upload) 
+                    VALUES ('$id_mahasiswa','$waktu_awal','$waktu_akhir','$tanggal', '$kegiatan1', '$kegiatan2', '$uniq_name')";
 
                 $simpan_kegiatan = mysqli_query($kon, $sql);
 
@@ -89,9 +90,20 @@ if (isset($_POST['simpan_kegiatan'])) {
         </div>
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Kegiatan :</label>
-                <input type="text" name="kegiatan" class="form-control" value="" placeholder="Masukkan Kegiatan Anda?"
-                    required>
+                <label for="kegiatan1">Kegiatan 1:</label>
+                <select name="kegiatan1" id="kegiatan1" class="form-control" required>
+                    <option value="" disabled selected>Pilih Kegiatan Anda</option>
+                    <option value="Menyalakan komputer layanan pagi">Menyalakan komputer layanan pagi</option>
+                    <option value="Memasukkan berita">Memasukkan berita</option>
+                    <option value="Merancang sebuah website">Merancang sebuah website</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label for="kegiatan2">Kegiatan 2:</label>
+                <textarea name="kegiatan2" id="kegiatan2" class="form-control" rows="5"
+                    placeholder="Masukkan kegiatan lainnya" required></textarea>
             </div>
         </div>
         <div class="col-sm-12">

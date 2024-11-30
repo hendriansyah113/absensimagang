@@ -40,13 +40,6 @@
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label>Upload Foto Kegiatan:</label> <!-- New input for photo -->
-                                <input type="file" name="foto_kegiatan" id="foto_kegiatan" class="form-control"
-                                    accept="image/*" required>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="form-group">
                                 </br>
                                 <button type="submit" class="btn btn-info">
                                     <i class="fa fa-search"></i> Cari
@@ -146,11 +139,13 @@ $tanggal_keluar = strftime("%d %B %Y", strtotime($akhir_magang));
                                         echo $tgl . ' ' . MendapatkanBulan($bulan) . ' ' . $tahun;
                                         ?>
                                     </td>
-                                    <td class="text-center"><?php echo WaktuKegiatan($data['kegiatan']); ?></td>
-                                    <td><?php echo BarisKegiatan($data['kegiatan']); ?></td>
-                                    <td class="text-center">
-                                        <!-- Display the uploaded photo -->
-                                        <?php if (isset($data['file_upload'])): ?>
+                                    <td class="text-center"><?php echo WaktuKegiatan($data['kegiatan1_detail']); ?></td>
+                                    <td><?php echo $data['semua_kegiatan'] ?>
+                                    </td>
+                                    </td>
+                                    <td>
+                                        <!-- Display photo if exists, otherwise show default image -->
+                                        <?php if (isset($data['file_upload']) && preg_match('/\.(jpg|jpeg|png|gif)$/i', $data['file_upload'])): ?>
                                             <img src="uploads/kegiatan/<?php echo $data['file_upload']; ?>" width="100"
                                                 alt="Foto Kegiatan">
                                         <?php else: ?>

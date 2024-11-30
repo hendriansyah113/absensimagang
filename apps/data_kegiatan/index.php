@@ -158,7 +158,7 @@ if ($_SESSION["level"] != 'Admin' and $_SESSION["level"] != 'admin') {
                                         ?>
                                     </td>
                                     <td><?php echo $data['waktu']; ?></td>
-                                    <td><?php echo $data['kegiatan']; ?></td>
+                                    <td>1. <?php echo $data['kegiatan1']; ?><br>2. <?php echo $data['kegiatan2']; ?>
                                     <td>
                                         <button id_mahasiswa="<?php echo $data['id_mahasiswa']; ?>"
                                             id_kegiatan="<?php echo $data['id_kegiatan']; ?>"
