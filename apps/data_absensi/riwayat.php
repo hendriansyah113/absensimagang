@@ -1,5 +1,12 @@
 <style>
-
+    #map {
+        height: 400px;
+        /* Adjust the height of the map */
+        border: 2px solid #ccc;
+        /* Optional: Add a border around the map */
+        border-radius: 8px;
+        /* Optional: Rounded corners */
+    }
 </style>
 
 <div class="row">
@@ -70,6 +77,7 @@
                             <th class="text-center">Kehadiran</th>
                             <th class="text-center">Keterangan</th>
                             <th class="text-center">Foto</th>
+                            <th class="text-center">File Izin</th>
                             <th class="text-center">Lokasi</th>
                         </tr>
                     </thead>
@@ -154,6 +162,7 @@
                                     <img src="uploads/<?php echo $data['foto']; ?>" alt="Foto Absen"
                                         style="width:50px; height:50px;">
                                 </td>
+                                <td></td>
                                 <td class="text-center">
                                     <button class="show-map btn btn-info" data-lat="<?php echo $data['latitude']; ?>"
                                         data-lng="<?php echo $data['longitude']; ?>">Lihat Peta</button>
@@ -222,6 +231,8 @@
 
 <script>
     $(document).ready(function() {
+        // Variabel global untuk instance peta
+        let map = null;
         // Setting absensi
         $('.cetak').on('click', function() {
             var id_mahasiswa = $(this).attr("id_mahasiswa");
@@ -239,30 +250,49 @@
             });
         });
 
-        // Menampilkan lokasi dalam modal
+        // Event untuk menampilkan lokasi dalam modal
         $('.show-map').on('click', function() {
             var latitude = $(this).data('lat');
             var longitude = $(this).data('lng');
 
-            // Inisialisasi peta
-            var map = L.map('map').setView([latitude, longitude], 13);
+            // Hapus instance peta sebelumnya jika ada
+            if (map !== null) {
+                map.remove();
+                map = null;
+            }
+
+            // Bersihkan kontainer peta untuk menghindari duplikasi elemen
+            $('#map').empty();
+
+            // Inisialisasi peta baru
+            map = L.map('map').setView([latitude, longitude], 15);
 
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
+                maxZoom: 22,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
 
-            // Menambahkan marker
-            var marker = L.marker([latitude, longitude]).addTo(map)
+            // Tambahkan marker pada peta
+            L.marker([latitude, longitude]).addTo(map)
                 .openPopup();
 
-            // Tampilkan modal terlebih dahulu
+            // Tampilkan modal
             $('#mapModal').modal('show');
+        });
 
-            // Mengatur ulang peta saat modal ditutup
-            $('#mapModal').on('hidden.bs.modal', function() {
-                map.remove(); // Hapus peta untuk menghindari kesalahan jika modal dibuka kembali
-            });
+        // Mengatur ulang peta saat modal ditutup
+        $('#mapModal').on('hidden.bs.modal', function() {
+            if (map !== null) {
+                map.remove(); // Hapus instance peta
+                map = null; // Reset variabel peta
+            }
+        });
+
+        // Menyesuaikan ukuran peta setelah modal ditampilkan
+        $('#mapModal').on('shown.bs.modal', function() {
+            if (map !== null) {
+                map.invalidateSize(); // Memperbarui ukuran peta
+            }
         });
     });
 </script>

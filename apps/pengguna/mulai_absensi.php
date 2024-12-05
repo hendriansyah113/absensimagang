@@ -182,7 +182,7 @@ $allowedRadius = $row['radius'];
             </div>
         </div>
 
-        <div class="col-sm-6" id="text_alasan" style="display:none;">
+        <div class="col-sm-6" id="alasan" style="display:none;">
             <div class="form-group">
                 <label>Alasan :</label>
                 <input type="text" name="alasan" id="alasan" class="form-control"
