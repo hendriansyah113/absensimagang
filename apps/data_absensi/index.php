@@ -89,7 +89,7 @@ if ($_SESSION["level"] != 'Admin' and $_SESSION["level"] != 'admin') {
                             <tr>
                                 <th>No</th>
                                 <th>Nama</th>
-                                <th>Universitas</th>
+                                <th>Instansi</th>
                                 <th>Status</th>
                                 <th>Waktu</th>
                                 <th>Hari</th>

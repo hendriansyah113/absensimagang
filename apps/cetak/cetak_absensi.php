@@ -53,7 +53,7 @@ $pdf->Cell(30, 6, 'Nama ', 0, 0);
 $pdf->Cell(31, 6, ': ' . $data['nama'], 0, 1);
 $pdf->Cell(30, 6, 'Nim ', 0, 0);
 $pdf->Cell(31, 6, ': ' . $data['nim'], 0, 1);
-$pdf->Cell(30, 6, 'Universitas ', 0, 0);
+$pdf->Cell(30, 6, 'Instansi ', 0, 0);
 $pdf->Cell(31, 6, ': ' . $data['universitas'], 0, 1);
 $pdf->Cell(30, 6, 'Jurusan ', 0, 0);
 $pdf->Cell(31, 6, ': ' . $data['jurusan'], 0, 1);

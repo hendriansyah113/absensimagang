@@ -84,7 +84,7 @@ $akhir_absen = $setting['akhir_absen'];
                                 <td width="80%">: <?php echo $nim; ?></td>
                             </tr>
                             <tr>
-                                <td>Universitas</td>
+                                <td>Instansi</td>
                                 <td width="80%">: <?php echo $universitas; ?></td>
                             </tr>
                             <tr>

@@ -103,9 +103,9 @@ $data = mysqli_fetch_array($hasil);
         </div>
         <div class="col-sm-6">
             <div class="form-group">
-                <label>Universitas :</label>
+                <label>Instansi :</label>
                 <input type="text" name="universitas" class="form-control" value="<?php echo $data['universitas']; ?>"
-                    placeholder="Masukan Nama Universitas" required>
+                    placeholder="Masukan Nama Instansi" required>
             </div>
         </div>
         <div class="col-sm-6">
