@@ -13,7 +13,7 @@ if (isset($_POST['submit'])) {
     $latitude = $_POST['latitude'];
     $longitude = $_POST['longitude'];
     $status = $_POST["status"];
-    $alasan = isset($_POST["alasan"]) ? input($_POST["alasan"]) : null;
+    $alasan = $_POST["alasan"];
 
     // Inisialisasi variabel untuk file upload surat
     $uploadOk = 1;
@@ -107,7 +107,7 @@ if (isset($_POST['submit'])) {
         $simpan_absensi = mysqli_query($kon, $sql);
 
         // Jika status izin atau sakit, simpan alasan dan file surat
-        if (($status == "Hadir" || $status == "Sakit") && $alasan) {
+        if (($status == "Izin" || $status == "Sakit") && $alasan) {
             if ($uploadOk == 1) {
                 if (move_uploaded_file($_FILES["surat"]["tmp_name"], $target_dir)) {
                     echo "Surat berhasil diupload.";
@@ -257,6 +257,7 @@ $allowedRadius = $row['radius'];
                 $("#submit").prop('disabled', true);
                 $("#text_alasan").hide();
                 $("#alasan").attr("required", false);
+                $("#alasan").hide(); // Wajib input alasan
                 $("#surat").attr("required", false); // Wajib upload surat
                 $("#surat").hide();
             } else if (status == "Izin" || status == "Sakit") { // Jika memilih Izin atau Sakit
@@ -266,6 +267,7 @@ $allowedRadius = $row['radius'];
                 $("#submit").prop('disabled', false);
                 $("#surat").show(); // Wajib upload surat
                 $("#alasan").attr("required", true); // Wajib input alasan
+                $("#alasan").show(); // Wajib input alasan
                 $("#surat").attr("required", true); // Wajib upload surat
             } else {
                 // Sembunyikan input alasan dan tidak wajib diisi
@@ -273,6 +275,7 @@ $allowedRadius = $row['radius'];
                 $("#text_alasan").hide();
                 $("#upload_surat").hide();
                 $("#alasan").attr("required", false);
+                $("#alasan").hide(); // Wajib input alasan
                 $("#surat").attr("required", false); // Wajib upload surat
 
                 if (status == "Hadir") { // Jika statusnya Hadir (status 1)

@@ -1,12 +1,12 @@
 <style>
-    #map {
-        height: 400px;
-        /* Adjust the height of the map */
-        border: 2px solid #ccc;
-        /* Optional: Add a border around the map */
-        border-radius: 8px;
-        /* Optional: Rounded corners */
-    }
+#map {
+    height: 400px;
+    /* Adjust the height of the map */
+    border: 2px solid #ccc;
+    /* Optional: Add a border around the map */
+    border-radius: 8px;
+    /* Optional: Rounded corners */
+}
 </style>
 
 <div class="row">
@@ -91,7 +91,7 @@
                         if (isset($_GET['tanggal_awal']) and $_GET['tanggal_akhir']) {
                             $tanggal_awal = $_GET["tanggal_awal"];
                             $tanggal_akhir = $_GET["tanggal_akhir"];
-                            $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.id_mahasiswa, tbl_alasan.id_alasan, 
+                            $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.id_mahasiswa, tbl_alasan.id_alasan, tbl_alasan.file_surat,
                                 DAYNAME(tbl_absensi.tanggal) AS hari,
                                 tbl_absensi.waktu,
                                 tbl_absensi.tanggal,
@@ -113,7 +113,7 @@
                                 tbl_absensi.tanggal <= '$tanggal_akhir'
                                 ORDER BY tbl_absensi.tanggal DESC;";
                         } else {
-                            $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.id_mahasiswa, tbl_alasan.id_alasan, 
+                            $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.id_mahasiswa, tbl_alasan.id_alasan, tbl_alasan.file_surat,
                                 DAYNAME(tbl_absensi.tanggal) AS hari,
                                 tbl_absensi.waktu,
                                 tbl_absensi.tanggal,
@@ -139,37 +139,46 @@
                         while ($data = mysqli_fetch_array($hasil)):
                             $no++;
                         ?>
-                            <tr>
-                                <td class="text-center"><?php echo $no; ?></td>
-                                <td class="text-center">
-                                    <?php
+                        <tr>
+                            <td class="text-center"><?php echo $no; ?></td>
+                            <td class="text-center">
+                                <?php
                                     $hari = $data['hari'];
                                     echo MendapatkanHari($hari);
                                     ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php
+                            </td>
+                            <td class="text-center">
+                                <?php
                                     $tgl = date("d", strtotime($data['tanggal']));
                                     $bulan = date("m", strtotime($data['tanggal']));
                                     $tahun = date("Y", strtotime($data['tanggal']));
                                     echo $tgl . ' ' . MendapatkanBulan($bulan) . ' ' . $tahun
                                     ?>
-                                </td>
-                                <td class="text-center"><?php echo $data['waktu']; ?></td>
-                                <td class="text-center"><?php echo $data['status']; ?></td>
-                                <td class="text-center"><?php echo $data['alasan']; ?></td>
-                                <td class="text-center">
-                                    <img src="uploads/<?php echo $data['foto']; ?>" alt="Foto Absen"
-                                        style="width:50px; height:50px;">
-                                </td>
-                                <td></td>
-                                <td class="text-center">
-                                    <button class="show-map btn btn-info" data-lat="<?php echo $data['latitude']; ?>"
-                                        data-lng="<?php echo $data['longitude']; ?>">Lihat Peta</button>
-                                </td>
+                            </td>
+                            <td class="text-center"><?php echo $data['waktu']; ?></td>
+                            <td class="text-center"><?php echo $data['status']; ?></td>
+                            <td class="text-center"><?php echo $data['alasan']; ?></td>
+                            <td class="text-center">
+                                <img src="uploads/<?php echo $data['foto']; ?>" alt="Foto Absen"
+                                    style="width:50px; height:50px;">
+                            </td>
+                            <td class="text-center">
+                                <?php if (!empty($data['file_surat'])): ?>
+                                <a href="uploads/surat/<?php echo $data['file_surat']; ?>"
+                                    class="btn btn-primary btn-sm" download>
+                                    Download
+                                </a>
+                                <?php else: ?>
+                                <span class="text-muted">Tidak ada file</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-center">
+                                <button class="show-map btn btn-info" data-lat="<?php echo $data['latitude']; ?>"
+                                    data-lng="<?php echo $data['longitude']; ?>">Lihat Peta</button>
+                            </td>
 
-                            </tr>
-                            <!-- bagian akhir (penutup) while -->
+                        </tr>
+                        <!-- bagian akhir (penutup) while -->
                         <?php endwhile; ?>
                     </tbody>
                 </table>
@@ -230,69 +239,69 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
 
 <script>
-    $(document).ready(function() {
-        // Variabel global untuk instance peta
-        let map = null;
-        // Setting absensi
-        $('.cetak').on('click', function() {
-            var id_mahasiswa = $(this).attr("id_mahasiswa");
-            $.ajax({
-                url: 'apps/data_absensi/cetak.php',
-                method: 'POST',
-                data: {
-                    id_mahasiswa: id_mahasiswa
-                },
-                success: function(data) {
-                    $('#tampil_data').html(data);
-                    document.getElementById("judul").innerHTML = 'Cetak Absensi';
-                    $('#modal').modal('show');
-                }
-            });
-        });
-
-        // Event untuk menampilkan lokasi dalam modal
-        $('.show-map').on('click', function() {
-            var latitude = $(this).data('lat');
-            var longitude = $(this).data('lng');
-
-            // Hapus instance peta sebelumnya jika ada
-            if (map !== null) {
-                map.remove();
-                map = null;
-            }
-
-            // Bersihkan kontainer peta untuk menghindari duplikasi elemen
-            $('#map').empty();
-
-            // Inisialisasi peta baru
-            map = L.map('map').setView([latitude, longitude], 15);
-
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 22,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(map);
-
-            // Tambahkan marker pada peta
-            L.marker([latitude, longitude]).addTo(map)
-                .openPopup();
-
-            // Tampilkan modal
-            $('#mapModal').modal('show');
-        });
-
-        // Mengatur ulang peta saat modal ditutup
-        $('#mapModal').on('hidden.bs.modal', function() {
-            if (map !== null) {
-                map.remove(); // Hapus instance peta
-                map = null; // Reset variabel peta
-            }
-        });
-
-        // Menyesuaikan ukuran peta setelah modal ditampilkan
-        $('#mapModal').on('shown.bs.modal', function() {
-            if (map !== null) {
-                map.invalidateSize(); // Memperbarui ukuran peta
+$(document).ready(function() {
+    // Variabel global untuk instance peta
+    let map = null;
+    // Setting absensi
+    $('.cetak').on('click', function() {
+        var id_mahasiswa = $(this).attr("id_mahasiswa");
+        $.ajax({
+            url: 'apps/data_absensi/cetak.php',
+            method: 'POST',
+            data: {
+                id_mahasiswa: id_mahasiswa
+            },
+            success: function(data) {
+                $('#tampil_data').html(data);
+                document.getElementById("judul").innerHTML = 'Cetak Absensi';
+                $('#modal').modal('show');
             }
         });
     });
+
+    // Event untuk menampilkan lokasi dalam modal
+    $('.show-map').on('click', function() {
+        var latitude = $(this).data('lat');
+        var longitude = $(this).data('lng');
+
+        // Hapus instance peta sebelumnya jika ada
+        if (map !== null) {
+            map.remove();
+            map = null;
+        }
+
+        // Bersihkan kontainer peta untuk menghindari duplikasi elemen
+        $('#map').empty();
+
+        // Inisialisasi peta baru
+        map = L.map('map').setView([latitude, longitude], 15);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 22,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Tambahkan marker pada peta
+        L.marker([latitude, longitude]).addTo(map)
+            .openPopup();
+
+        // Tampilkan modal
+        $('#mapModal').modal('show');
+    });
+
+    // Mengatur ulang peta saat modal ditutup
+    $('#mapModal').on('hidden.bs.modal', function() {
+        if (map !== null) {
+            map.remove(); // Hapus instance peta
+            map = null; // Reset variabel peta
+        }
+    });
+
+    // Menyesuaikan ukuran peta setelah modal ditampilkan
+    $('#mapModal').on('shown.bs.modal', function() {
+        if (map !== null) {
+            map.invalidateSize(); // Memperbarui ukuran peta
+        }
+    });
+});
 </script>
