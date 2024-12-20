@@ -130,6 +130,20 @@ $akhir_absen = $setting['akhir_absen'];
                                     $tanggal_sekarang = date("Y-m-d");
                                     $hari_sekarang = date("l", strtotime($tanggal_sekarang));
                                     $is_absen = false; // Mahasiswa sudah absen
+                                    $kueri_pulang = "SELECT status, waktu_pulang FROM tbl_absensi WHERE id_mahasiswa = '$id_mahasiswa' AND tanggal = '$tanggal_sekarang'";
+$result_pulang = mysqli_query($kon, $kueri_pulang);
+if (mysqli_num_rows($result_pulang) > 0) {
+    $data_pulang = mysqli_fetch_assoc($result_pulang);
+    if ($data_pulang['waktu_pulang'] != null) {
+        // The user has already marked "Pulang"
+        $is_absen_pulang = true;
+    } else {
+        $is_absen_pulang = false;
+    }
+} else {
+    $is_absen_pulang = false;
+}
+
                                     if ($hari_sekarang == "Saturday" || $hari_sekarang == "Sunday") {
                                         echo "Hari Libur";
                                     } else {
@@ -153,6 +167,26 @@ $akhir_absen = $setting['akhir_absen'];
                                 </td>
                             </tr>
                             <tr>
+    <td>Status Pulang</td>
+    <td width="80">:
+        <?php
+        $kueri_pulang_status = "SELECT waktu_pulang FROM tbl_absensi WHERE id_mahasiswa = '$id_mahasiswa' AND tanggal = '$tanggal_sekarang'";
+        $result_pulang_status = mysqli_query($kon, $kueri_pulang_status);
+        if (mysqli_num_rows($result_pulang_status) > 0) {
+            $data_pulang_status = mysqli_fetch_assoc($result_pulang_status);
+            if ($data_pulang_status['waktu_pulang'] != null) {
+                echo "Sudah Pulang pada: " . date("H:i:s", strtotime($data_pulang_status['waktu_pulang']));
+            } else {
+                echo "Belum Absen Pulang";
+            }
+        } else {
+            echo "Belum Absen Pulang";
+        }
+        ?>
+    </td>
+</tr>
+
+                            <tr>
                                 <td>
                                     <button id_mahasiswa="<?php echo $id_mahasiswa; ?>" id="tombol_absensi"
                                         class="tombol_periode mulai_absensi btn btn-success btn-circle" <?php if ($is_absen) {
@@ -162,6 +196,17 @@ $akhir_absen = $setting['akhir_absen'];
                                     </button>
                                 </td>
                             </tr>
+                            <tr>
+                            <tr>
+    <td>
+        <button id_mahasiswa="<?php echo $id_mahasiswa; ?>" class="tombol_periode pulang_absensi btn btn-danger btn-circle" <?php if (!$is_absen) { echo 'disabled'; } ?>>
+            <i class="fa fa-clock-o"></i> Absen Pulang
+        </button>
+    </td>
+</tr>
+
+
+
                         </tbody>
                     </table>
                 </div>
@@ -222,6 +267,30 @@ $akhir_absen = $setting['akhir_absen'];
             // Membuka modal
             $('#modal').modal('show');
         });
+
+   // Menangani tombol absen pulang
+$('.pulang_absensi').on('click', function() {
+    var id_mahasiswa = $(this).attr("id_mahasiswa");
+
+    // Memanggil AJAX untuk absen pulang
+    $.ajax({
+        url: 'apps/pengguna/absen_pulang.php',
+        method: 'post',
+        data: {
+            id_mahasiswa: id_mahasiswa
+        },
+        success: function(response) {
+            // Menampilkan hasil status
+            alert(response); // Tampilkan hasil dari server
+            location.reload(); // Reload halaman untuk memperbarui status absen
+        },
+        error: function() {
+            alert('Terjadi kesalahan saat memproses absen pulang.');
+        }
+    });
+});
+
+
     </script>
 
     <script>

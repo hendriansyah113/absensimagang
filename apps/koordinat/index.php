@@ -58,7 +58,7 @@ if ($_SESSION["level"] != 'Admin' and $_SESSION["level"] != 'admin') {
                             name="longitude" placeholder="Masukkan Longitude" required oninput="validateNumber(this)">
                     </div>
                     <div class="form-group">
-                        <label>Radius :</label>
+                        <label>Radius (Meter):</label>
                         <input type="text" id="radius" class="form-control" value="<?php echo $data['radius']; ?>"
                             name="radius" placeholder="Masukkan Radius" required oninput="validateNumber(this)">
                     </div>

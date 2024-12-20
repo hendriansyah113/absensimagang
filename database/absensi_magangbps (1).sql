@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 04 Des 2024 pada 11.27
+-- Waktu pembuatan: 05 Des 2024 pada 18.42
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 7.4.30
 
@@ -47,7 +47,12 @@ INSERT INTO `tbl_absensi` (`id_absensi`, `id_mahasiswa`, `status`, `waktu`, `tan
 (40, 2, 'Hadir', '01:46:28', '2024-11-29', '-2.221584', '113.931082', 'foto_6748ba84e76d9.png'),
 (41, 2, 'Hadir', '01:52:17', '2024-11-29', '-2.221584', '113.931082', 'foto_6748bbe1b01d8.png'),
 (42, 2, 'Hadir', '01:53:32', '2024-11-29', '-2.22161875', '113.9310595', 'foto_6748bc2c9bb5e.png'),
-(43, 2, 'Hadir', '12:20:00', '2024-11-30', '', '', '');
+(43, 2, 'Hadir', '12:20:00', '2024-11-30', '-2.2116231916424347', '113.92664459984618', ''),
+(48, 2, 'Izin', '00:07:10', '2024-12-06', '-2.22161875', '113.9310595', 'foto_6751ddbe3aab9.png'),
+(54, 2, 'Izin', '00:25:00', '2024-12-06', '-2.221584', '113.931082', 'foto_6751e1ec004d6.png'),
+(55, 2, 'Izin', '00:26:14', '2024-12-06', '-2.221584', '113.931082', 'foto_6751e23681f9c.png'),
+(56, 2, 'Izin', '00:27:45', '2024-12-06', '-2.221584', '113.931082', 'foto_6751e291d8930.png'),
+(57, 2, 'Sakit', '00:36:33', '2024-12-06', '-2.221584', '113.931082', 'foto_6751e4a19804e.png');
 
 -- --------------------------------------------------------
 
@@ -90,7 +95,8 @@ CREATE TABLE `tbl_alasan` (
 --
 
 INSERT INTO `tbl_alasan` (`id_alasan`, `id_mahasiswa`, `alasan`, `tanggal`, `file_surat`) VALUES
-(21, 2, '', '2024-09-25', '');
+(22, 2, 'kk', '2024-12-06', 'SURAT PERNYATAAN TIDAK BERTATO & TIDAK BERTINDIK.pdf'),
+(23, 2, 'mari', '2024-12-06', 'Desain tanpa judul.png');
 
 -- --------------------------------------------------------
 
@@ -187,7 +193,7 @@ CREATE TABLE `tbl_setting_absensi` (
 --
 
 INSERT INTO `tbl_setting_absensi` (`id_waktu`, `mulai_absen`, `akhir_absen`) VALUES
-(1, '01:31:00', '23:05:00');
+(1, '00:01:00', '23:05:00');
 
 -- --------------------------------------------------------
 
@@ -262,8 +268,7 @@ ALTER TABLE `tbl_admin`
 -- Indeks untuk tabel `tbl_alasan`
 --
 ALTER TABLE `tbl_alasan`
-  ADD PRIMARY KEY (`id_alasan`),
-  ADD KEY `tbl_alasan_ibfk1_1` (`id_mahasiswa`);
+  ADD PRIMARY KEY (`id_alasan`);
 
 --
 -- Indeks untuk tabel `tbl_kegiatan`
@@ -300,7 +305,7 @@ ALTER TABLE `tbl_user`
 -- AUTO_INCREMENT untuk tabel `tbl_absensi`
 --
 ALTER TABLE `tbl_absensi`
-  MODIFY `id_absensi` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id_absensi` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT untuk tabel `tbl_admin`
@@ -312,7 +317,7 @@ ALTER TABLE `tbl_admin`
 -- AUTO_INCREMENT untuk tabel `tbl_alasan`
 --
 ALTER TABLE `tbl_alasan`
-  MODIFY `id_alasan` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_alasan` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT untuk tabel `tbl_kegiatan`

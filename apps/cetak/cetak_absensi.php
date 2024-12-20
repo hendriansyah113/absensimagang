@@ -41,6 +41,21 @@ $mulai_hari = date("d", strtotime($awal_magang));
 $akhir_hari = date("d", strtotime($akhir_magang));
 $akhir_tahun = date("Y", strtotime($akhir_magang));
 
+// Tambahkan variabel untuk menghitung jumlah hadir, izin, dan sakit
+$sql_count = "SELECT 
+    SUM(CASE WHEN status = 'Hadir' THEN 1 ELSE 0 END) AS jumlah_hadir,
+    SUM(CASE WHEN status = 'Izin' THEN 1 ELSE 0 END) AS jumlah_izin,
+    SUM(CASE WHEN status = 'Sakit' THEN 1 ELSE 0 END) AS jumlah_sakit
+FROM tbl_absensi 
+WHERE id_mahasiswa = $id_mahasiswa AND 
+tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir'";
+$result_count = mysqli_query($kon, $sql_count);
+$count_data = mysqli_fetch_assoc($result_count);
+
+$jumlah_hadir = $count_data['jumlah_hadir'];
+$jumlah_izin = $count_data['jumlah_izin'];
+$jumlah_sakit = $count_data['jumlah_sakit'];
+
 $pdf->SetFont('Arial', 'B', 14);
 $pdf->Cell(0, 5, '', 0, 1, 'C');
 $pdf->Cell(0, 7, 'DAFTAR HADIR MAHASISWA MAGANG', 0, 1, 'C');
@@ -63,14 +78,15 @@ $pdf->SetFont('Arial', 'B', 10);
 $pdf->Cell(10, 6, 'No', 1, 0, 'C');
 $pdf->Cell(30, 6, 'Hari', 1, 0, 'C');
 $pdf->Cell(40, 6, 'Tanggal', 1, 0, 'C');
-$pdf->Cell(30, 6, 'Waktu', 1, 0, 'C');
+$pdf->Cell(20, 6, 'Waktu', 1, 0, 'C');
+$pdf->Cell(25, 6, 'Waktu Pulang', 1, 0, 'C');
 $pdf->Cell(48, 6, 'Keterangan', 1, 0, 'C');
 $pdf->Cell(30, 6, 'Foto', 1, 1, 'C');
 $pdf->SetFont('Arial', '', 10);
 
 $no = 0;
 
-$sql = "SELECT id_absensi, foto, id_mahasiswa, status, tanggal, waktu,
+$sql = "SELECT id_absensi, foto, id_mahasiswa, status, tanggal, waktu, waktu_pulang,
     DATE_FORMAT(tanggal, '%W') AS hari 
     FROM tbl_absensi WHERE id_mahasiswa = $id_mahasiswa AND 
     tanggal BETWEEN '$tanggal_awal' AND '$tanggal_akhir'
@@ -94,7 +110,8 @@ while ($data = mysqli_fetch_assoc($hasil)) {
     $pdf->Cell(10, $tinggi_baris, $no, 1, 0, 'C');
     $pdf->Cell(30, $tinggi_baris, MendapatkanHari($hari), 1, 0, 'C');
     $pdf->Cell(40, $tinggi_baris, $tgl . ' ' . MendapatkanBulan($bulan) . ' ' . $tahun, 1, 0, 'C');
-    $pdf->Cell(30, $tinggi_baris, $waktu, 1, 0, 'C');
+    $pdf->Cell(20, $tinggi_baris, $waktu, 1, 0, 'C');
+    $pdf->Cell(25, $tinggi_baris, $data['waktu_pulang'], 1, 0, 'C');
     $pdf->Cell(48, $tinggi_baris, StatusAbsensi($status), 1, 0, 'C');
 
     // Kolom untuk foto
@@ -117,6 +134,16 @@ while ($data = mysqli_fetch_assoc($hasil)) {
     $pdf->Ln();
 }
 
+// Tambahkan bagian akhir tabel untuk menampilkan jumlah
+$pdf->SetFont('Arial', 'B', 10);
+$pdf->Cell(10, 6, 'Hadir :', 0, 0, 'C');
+$pdf->Cell(20, 6, $jumlah_hadir, 0, 0, 'C');
+
+$pdf->Cell(5, 6, 'Izin :', 0, 0, 'C');
+$pdf->Cell(20, 6, $jumlah_izin, 0, 0, 'C');
+
+$pdf->Cell(5, 6, 'Sakit :', 0, 0, 'C');
+$pdf->Cell(20, 6, $jumlah_sakit, 0, 0, 'C');
 
 $tanggal = date('Y-m-d');
 $pdf->SetFont('Arial', '', 10);

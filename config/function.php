@@ -79,7 +79,7 @@ function AbsensiOtomatis($sql)
 {
     include 'database.php';
     $sql = "SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama, tbl_mahasiswa.universitas, 
-        tbl_mahasiswa.mulai_magang, tbl_mahasiswa.akhir_magang, tbl_absensi.id_absensi, tbl_absensi.foto,
+        tbl_mahasiswa.mulai_magang, tbl_mahasiswa.akhir_magang, tbl_absensi.id_absensi, tbl_absensi.foto, tbl_absensi.waktu_pulang,
         (CASE
             WHEN tbl_absensi.status IS NULL THEN 'Belum Absensi'
             WHEN tbl_absensi.status = 1 THEN 'Hadir'
@@ -106,7 +106,7 @@ function AbsensiOtomatis($sql)
 function PencarianAbsensi($nama, $tanggal_awal, $tanggal_akhir)
 {
     include 'database.php';
-    $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.foto, tbl_absensi.id_mahasiswa, 
+    $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.foto, tbl_absensi.id_mahasiswa, tbl_absensi.waktu_pulang,
     COALESCE(CASE tbl_absensi.status 
         WHEN 1 THEN 'Hadir' 
         WHEN 2 THEN 'Izin' 
@@ -163,9 +163,9 @@ function DataKegiatan($sql)
 function CariKegiatan($nama, $tanggal_awal, $tanggal_akhir)
 {
     include 'database.php';
-    $sql = "SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama, 
+    $sql = "SELECT tbl_mahasiswa.id_mahasiswa, tbl_mahasiswa.nama,
     tbl_mahasiswa.universitas, tbl_kegiatan.id_kegiatan, 
-    tbl_kegiatan.kegiatan, tbl_kegiatan.tanggal, 
+    tbl_kegiatan.kegiatan1, tbl_kegiatan.kegiatan2, tbl_kegiatan.tanggal, tbl_kegiatan.file_upload,
     DATE_FORMAT(tbl_kegiatan.tanggal, '%W') AS hari, 
     CONCAT(SUBSTRING(tbl_kegiatan.waktu_awal, 1, 5), ' - ', SUBSTRING(tbl_kegiatan.waktu_akhir, 1, 5)) AS waktu
     FROM tbl_mahasiswa JOIN tbl_kegiatan ON 

@@ -41,6 +41,46 @@ if (isset($_POST['simpan_kegiatan'])) {
     }
 }
 ?>
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .input-group select {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .input-group .input-group-append {
+        display: flex;
+    }
+
+    .input-group .input-group-append button {
+        margin-left: 5px;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #e9ecef;
+        cursor: pointer;
+    }
+
+    .input-group .input-group-append button:hover {
+        background-color: #dcdcdc;
+    }
+</style>
 
 <form action="apps/data_kegiatan/tambah.php" method="post" enctype="multipart/form-data">
     <div class="row">
@@ -77,15 +117,24 @@ if (isset($_POST['simpan_kegiatan'])) {
                 <input type="time" name="waktu_akhir" id="waktu_akhir" class="form-control" required>
             </div>
         </div>
-        <div class="col-sm-12">
-            <div class="form-group">
-                <label for="kegiatan1">Kegiatan 1:</label>
+        <div class="form-group col-sm-12">
+            <label for="kegiatan1">Kegiatan 1:</label>
+            <div class="input-group">
                 <select name="kegiatan1" id="kegiatan1" class="form-control" required>
                     <option value="" disabled selected>Pilih Kegiatan Anda</option>
-                    <option value="Menyalakan komputer layanan pagi">Menyalakan komputer layanan pagi</option>
-                    <option value="Memasukkan berita">Memasukkan berita</option>
-                    <option value="Merancang sebuah website">Merancang sebuah website</option>
+                    <?php
+                    $query = "SELECT id, nama_kegiatan FROM tbl_kegiatan_list";
+                    $result = mysqli_query($kon, $query);
+                    while ($data = mysqli_fetch_assoc($result)) {
+                        echo "<option value='" . htmlspecialchars($data['nama_kegiatan']) . "'>" . htmlspecialchars($data['nama_kegiatan']) . "</option>";
+                    }
+                    ?>
+                    <option value="addNew">+ Tambah Baru</option>
                 </select>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="editKegiatan()">Edit</button>
+                    <button class="btn btn-outline-danger" type="button" onclick="deleteKegiatan()">Hapus</button>
+                </div>
             </div>
         </div>
         <div class="col-sm-12">
@@ -98,7 +147,7 @@ if (isset($_POST['simpan_kegiatan'])) {
         <div class="col-sm-12">
             <div class="form-group">
                 <label>Unggah Foto :</label>
-                <input type="file" name="foto" class="form-control" required>
+                <input type="file" name="foto" class="form-control" accept="image/*" required>
             </div>
         </div>
     </div>
@@ -113,3 +162,88 @@ if (isset($_POST['simpan_kegiatan'])) {
         </div>
     </div>
 </form>
+<script>
+    document.getElementById('kegiatan1').addEventListener('change', function(event) {
+        if (event.target.value === 'addNew') {
+            addKegiatan();
+        }
+    });
+
+    function addKegiatan() {
+        const newData = prompt("Masukkan nama kegiatan baru:");
+        if (newData) {
+            const formData = new FormData();
+            formData.append('nama_kegiatan', newData);
+
+            fetch('apps/data_kegiatan/tambah_kegiatan.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'success') {
+                        alert('Kegiatan berhasil ditambahkan.');
+                        location.reload();
+                    } else {
+                        alert('Gagal menambahkan kegiatan.');
+                    }
+                });
+        }
+    }
+
+    function editKegiatan() {
+        const select = document.getElementById("kegiatan1");
+        const selectedOption = select.options[select.selectedIndex];
+        if (selectedOption && selectedOption.value !== 'addNew') {
+            const newData = prompt("Edit nama kegiatan:", selectedOption.text);
+            if (newData) {
+                const formData = new FormData();
+                formData.append('nama_kegiatan_lama', selectedOption.value);
+                formData.append('nama_kegiatan_baru', newData);
+
+                fetch('apps/data_kegiatan/edit_kegiatan.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === 'success') {
+                            alert('Kegiatan berhasil diubah.');
+                            location.reload();
+                        } else {
+                            alert('Gagal mengubah kegiatan.');
+                        }
+                    });
+            }
+        } else {
+            alert("Pilih kegiatan yang ingin diedit.");
+        }
+    }
+
+    function deleteKegiatan() {
+        const select = document.getElementById("kegiatan1");
+        const selectedOption = select.options[select.selectedIndex];
+        if (selectedOption && selectedOption.value !== 'addNew') {
+            if (confirm("Apakah Anda yakin ingin menghapus kegiatan ini?")) {
+                const formData = new FormData();
+                formData.append('nama_kegiatan', selectedOption.value);
+
+                fetch('apps/data_kegiatan/delete_kegiatan.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === 'success') {
+                            alert('Kegiatan berhasil dihapus.');
+                            location.reload();
+                        } else {
+                            alert('Gagal menghapus kegiatan.');
+                        }
+                    });
+            }
+        } else {
+            alert("Pilih kegiatan yang ingin dihapus.");
+        }
+    }
+</script>

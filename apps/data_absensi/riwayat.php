@@ -75,6 +75,7 @@
                             <th class="text-center">Tanggal</th>
                             <th class="text-center">Waktu</th>
                             <th class="text-center">Kehadiran</th>
+                            <th class="text-center">Waktu Pulang</th>
                             <th class="text-center">Keterangan</th>
                             <th class="text-center">Foto</th>
                             <th class="text-center">File Izin</th>
@@ -91,7 +92,7 @@
                         if (isset($_GET['tanggal_awal']) and $_GET['tanggal_akhir']) {
                             $tanggal_awal = $_GET["tanggal_awal"];
                             $tanggal_akhir = $_GET["tanggal_akhir"];
-                            $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.id_mahasiswa, tbl_alasan.id_alasan, tbl_alasan.file_surat,
+                            $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.waktu_pulang, tbl_absensi.id_mahasiswa, tbl_alasan.id_alasan, tbl_alasan.file_surat,
                                 DAYNAME(tbl_absensi.tanggal) AS hari,
                                 tbl_absensi.waktu,
                                 tbl_absensi.tanggal,
@@ -113,7 +114,7 @@
                                 tbl_absensi.tanggal <= '$tanggal_akhir'
                                 ORDER BY tbl_absensi.tanggal DESC;";
                         } else {
-                            $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.id_mahasiswa, tbl_alasan.id_alasan, tbl_alasan.file_surat,
+                            $sql = "SELECT tbl_absensi.id_absensi, tbl_absensi.waktu_pulang, tbl_absensi.id_mahasiswa, tbl_alasan.id_alasan, tbl_alasan.file_surat,
                                 DAYNAME(tbl_absensi.tanggal) AS hari,
                                 tbl_absensi.waktu,
                                 tbl_absensi.tanggal,
@@ -157,6 +158,7 @@
                             </td>
                             <td class="text-center"><?php echo $data['waktu']; ?></td>
                             <td class="text-center"><?php echo $data['status']; ?></td>
+                            <td class="text-center"><?php echo $data['waktu_pulang']; ?></td>
                             <td class="text-center"><?php echo $data['alasan']; ?></td>
                             <td class="text-center">
                                 <img src="uploads/<?php echo $data['foto']; ?>" alt="Foto Absen"

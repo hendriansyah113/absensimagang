@@ -92,6 +92,7 @@ if ($_SESSION["level"] != 'Admin' and $_SESSION["level"] != 'admin') {
                                 <th>Instansi</th>
                                 <th>Status</th>
                                 <th>Waktu</th>
+                                <th>Waktu Pulang</th>
                                 <th>Hari</th>
                                 <th>Tanggal</th>
                                 <th>Foto</th>
@@ -123,6 +124,7 @@ if ($_SESSION["level"] != 'Admin' and $_SESSION["level"] != 'admin') {
                                     <td><?php echo $data['universitas']; ?></td>
                                     <td><?php echo $data['status']; ?></td>
                                     <td><?php echo $data['waktu']; ?></td>
+                                    <td><?php echo $data['waktu_pulang']; ?></td>
                                     <td>
                                         <?php
                                         $hari = $data["hari"];
