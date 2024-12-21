@@ -93,9 +93,14 @@ if (isset($_POST['simpan_kegiatan'])) {
                 <label for="kegiatan1">Kegiatan 1:</label>
                 <select name="kegiatan1" id="kegiatan1" class="form-control" required>
                     <option value="" disabled selected>Pilih Kegiatan Anda</option>
-                    <option value="Menyalakan komputer layanan pagi">Menyalakan komputer layanan pagi</option>
-                    <option value="Memasukkan berita">Memasukkan berita</option>
-                    <option value="Merancang sebuah website">Merancang sebuah website</option>
+                    <?php
+                    include '../../config/database.php';
+                    $query = "SELECT id, nama_kegiatan FROM tbl_kegiatan_list";
+                    $result = mysqli_query($kon, $query);
+                    while ($data = mysqli_fetch_assoc($result)) {
+                        echo "<option value='" . htmlspecialchars($data['nama_kegiatan']) . "'>" . htmlspecialchars($data['nama_kegiatan']) . "</option>";
+                    }
+                    ?>
                 </select>
             </div>
         </div>
